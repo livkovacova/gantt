@@ -42,7 +42,6 @@ public class Task {
     private Project project;
 
     @ManyToMany
-    @JsonIgnore
     private List<Task> dependencies;
 
     @ManyToMany
@@ -51,7 +50,6 @@ public class Task {
             joinColumns = {@JoinColumn(name = "task_id")},
             inverseJoinColumns = {@JoinColumn(name = "team_member_id")}
     )
-    @JsonIgnore
     private List<TeamMember> assignees;
 
 

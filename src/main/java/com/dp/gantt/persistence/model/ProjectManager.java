@@ -18,10 +18,6 @@ public class ProjectManager extends GanttUser{
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manager")
-    @JsonManagedReference
-    private List<Project> projects;
-
     @Override
     void printHello() {
         System.out.println("Im team member " + this.name);

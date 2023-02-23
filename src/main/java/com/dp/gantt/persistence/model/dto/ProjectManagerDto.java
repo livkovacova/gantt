@@ -14,5 +14,4 @@ import java.util.Set;
 public class ProjectManagerDto {
     private Long id;
     private String name;
-    private List<Project> projects;
 }

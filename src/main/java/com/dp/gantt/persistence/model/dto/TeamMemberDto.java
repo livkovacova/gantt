@@ -15,6 +15,4 @@ import java.util.Set;
 public class TeamMemberDto {
     private Long id;
     private String name;
-    private List<Task> tasks;
-    private List<Project> projects;
 }

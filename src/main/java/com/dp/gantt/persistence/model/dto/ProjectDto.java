@@ -21,5 +21,4 @@ public class ProjectDto {
     private ProjectManager manager;
     private Integer resources;
     private List<TeamMember> members;
-    private List<Task> tasks;
 }

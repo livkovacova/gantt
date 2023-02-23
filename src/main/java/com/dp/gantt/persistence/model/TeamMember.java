@@ -17,14 +17,6 @@ public class TeamMember extends GanttUser {
 
     private String name;
 
-    @ManyToMany(mappedBy = "assignees")
-    @JsonIgnore
-    private Set<Task> tasks;
-
-    @ManyToMany(mappedBy = "members")
-    @JsonIgnore
-    private List<Project> projects;
-
     @Override
     void printHello() {
         System.out.println("Im team member " + this.name);

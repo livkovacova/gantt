@@ -37,11 +37,6 @@ public class Project {
             joinColumns = {@JoinColumn(name = "project_id")},
             inverseJoinColumns = {@JoinColumn(name = "team_member_id")}
     )
-    @JsonIgnore
-    private Set<TeamMember> members;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
-    @JsonManagedReference
-    private List<Task> tasks;
+    private List<TeamMember> members;
 
 }
