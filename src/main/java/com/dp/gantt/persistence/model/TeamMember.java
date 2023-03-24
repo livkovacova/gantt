@@ -10,15 +10,11 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "team_member")
-public class TeamMember extends GanttUser {
+public class TeamMember {
     @Id
     @GeneratedValue
     private Long id;
 
     private String name;
 
-    @Override
-    void printHello() {
-        System.out.println("Im team member " + this.name);
-    }
 }

@@ -41,6 +41,11 @@ public class Task {
     @JsonBackReference
     private Project project;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "phase_id")
+    @JsonBackReference
+    private Phase phase;
+
     @ManyToMany
     private List<Task> dependencies;
 
@@ -48,9 +53,9 @@ public class Task {
     @JoinTable(
             name = "task_assignees",
             joinColumns = {@JoinColumn(name = "task_id")},
-            inverseJoinColumns = {@JoinColumn(name = "team_member_id")}
+            inverseJoinColumns = {@JoinColumn(name = "gantt_user_id")}
     )
-    private List<TeamMember> assignees;
+    private List<GanttUser> assignees;
 
 
 }

@@ -24,10 +24,9 @@ public class Project {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "manager_id")
-    @JsonBackReference
-    private ProjectManager manager;
+    private GanttUser manager;
 
     private Integer resources;
 
@@ -35,8 +34,8 @@ public class Project {
     @JoinTable(
             name = "project_member",
             joinColumns = {@JoinColumn(name = "project_id")},
-            inverseJoinColumns = {@JoinColumn(name = "team_member_id")}
+            inverseJoinColumns = {@JoinColumn(name = "gantt_user_id")}
     )
-    private List<TeamMember> members;
+    private List<GanttUser> members;
 
 }

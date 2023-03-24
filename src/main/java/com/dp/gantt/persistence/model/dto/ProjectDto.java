@@ -1,5 +1,6 @@
 package com.dp.gantt.persistence.model.dto;
 
+import com.dp.gantt.persistence.model.GanttUser;
 import com.dp.gantt.persistence.model.ProjectManager;
 import com.dp.gantt.persistence.model.Task;
 import com.dp.gantt.persistence.model.TeamMember;
@@ -18,7 +19,7 @@ public class ProjectDto {
     private Long id;
     private String name;
     private String description;
-    private ProjectManager manager;
+    private GanttUser manager;
     private Integer resources;
-    private List<TeamMember> members;
+    private List<GanttUser> members;
 }

@@ -2,14 +2,14 @@ package com.dp.gantt.service;
 
 import com.dp.gantt.exceptions.ProjectNotFoundException;
 import com.dp.gantt.exceptions.TaskNotFoundException;
-import com.dp.gantt.exceptions.TeamMemberNotFoundException;
+import com.dp.gantt.exceptions.GanttUserNotFoundException;
+import com.dp.gantt.persistence.model.GanttUser;
 import com.dp.gantt.persistence.model.Project;
 import com.dp.gantt.persistence.model.Task;
-import com.dp.gantt.persistence.model.TeamMember;
 import com.dp.gantt.persistence.model.dto.TaskDto;
+import com.dp.gantt.persistence.repository.GanttUserRepository;
 import com.dp.gantt.persistence.repository.ProjectRepository;
 import com.dp.gantt.persistence.repository.TaskRepository;
-import com.dp.gantt.persistence.repository.TeamMemberRepository;
 import com.dp.gantt.service.mapper.TaskMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class TaskService {
 
     private final ProjectRepository projectRepository;
 
-    private final TeamMemberRepository teamMemberRepository;
+    private final GanttUserRepository ganttUserRepository;
 
     private final TaskMapper taskMapper;
 
@@ -83,7 +83,7 @@ public class TaskService {
 
     private void updateDependenciesInTask(TaskDto updateTask, Task taskToUpdate){
         Project project = updateTask.getProjectId() == null ? null : findTaskProject(updateTask.getProjectId());
-        List<TeamMember> assignees = updateTask.getAssignees() == null ? null : findTaskAssignees(updateTask.getAssignees());
+        List<GanttUser> assignees = updateTask.getAssignees() == null ? null : findTaskAssignees(updateTask.getAssignees());
         List<Task> dependencies = updateTask.getDependencies() == null ? null : findTaskDependencies(updateTask.getDependencies());
 
         taskToUpdate.setProject(project);
@@ -110,13 +110,13 @@ public class TaskService {
                 });
     }
 
-    private List<TeamMember> findTaskAssignees(List<Long> ids){
-        List<TeamMember> assignees = new ArrayList<>();
+    private List<GanttUser> findTaskAssignees(List<Long> ids){
+        List<GanttUser> assignees = new ArrayList<>();
         for (Long id : ids){
-            TeamMember assignee = teamMemberRepository.findById(id)
+            GanttUser assignee = ganttUserRepository.findById(id)
                     .orElseThrow(() -> {
                         log.error("Team member with id = {} can not be find while saving task", id);
-                        throw new TeamMemberNotFoundException(id);
+                        throw new GanttUserNotFoundException(id);
                     });
             assignees.add(assignee);
         }

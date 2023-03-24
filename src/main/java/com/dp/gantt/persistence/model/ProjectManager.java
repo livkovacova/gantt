@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "manager")
-public class ProjectManager extends GanttUser{
+public class ProjectManager {
 
     @Id
     @GeneratedValue
@@ -18,8 +18,4 @@ public class ProjectManager extends GanttUser{
 
     private String name;
 
-    @Override
-    void printHello() {
-        System.out.println("Im team member " + this.name);
-    }
 }
