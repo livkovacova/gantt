@@ -2,6 +2,8 @@ package com.dp.gantt.persistence.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +22,10 @@ public class Project {
     @GeneratedValue
     private Long id;
 
+    @Size(max = 30, min = 3)
     private String name;
 
+    @Size(max = 200, min = 3)
     private String description;
 
     @ManyToOne

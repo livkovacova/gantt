@@ -27,7 +27,7 @@ public class ProjectController {
     public PageResponse<ProjectDto> getProjectsByUserId(@RequestParam Long userId, @RequestParam RoleType role, @RequestParam(defaultValue = "0") Integer page,
                                                         @RequestParam(defaultValue = "10") Integer size,
                                                         @RequestParam(defaultValue = "id", required = false) String orderBy,
-                                                        @RequestParam(defaultValue = "ASC", required = false) String direction){
+                                                        @RequestParam(defaultValue = "DESC", required = false) String direction){
         return projectService.getUsersProjects(userId, role, page, size, orderBy, direction);
     }
 }

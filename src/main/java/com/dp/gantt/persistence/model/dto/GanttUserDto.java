@@ -1,33 +1,22 @@
 package com.dp.gantt.persistence.model.dto;
 
+import com.dp.gantt.persistence.model.Role;
 import com.dp.gantt.persistence.model.RoleType;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GanttUserDto {
     private Long id;
-    @NotNull
-    @NotEmpty
-    private String firstName;
-
-    @NotNull
-    @NotEmpty
-    private String lastName;
-
-    @NotNull
-    @NotEmpty
-    private String password;
-    private String matchingPassword;
-
-    @NotNull
-    @NotEmpty
+    private String username;
     private String email;
-
-    private RoleType roleType;
+    private Set<Role> roles = new HashSet<>();
 }
