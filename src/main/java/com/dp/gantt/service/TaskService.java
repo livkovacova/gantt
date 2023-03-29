@@ -27,9 +27,11 @@ public class TaskService {
 
     private final ProjectRepository projectRepository;
 
-    private final GanttUserRepository ganttUserRepository;
-
     private final TaskMapper taskMapper;
+
+    private final GanttUserService ganttUserService;
+
+    private final ProjectService projectService;
 
     public Task saveTask(TaskDto taskDto){
         Task task = taskMapper.taskDtoToTask(taskDto);
@@ -82,8 +84,8 @@ public class TaskService {
     }
 
     private void updateDependenciesInTask(TaskDto updateTask, Task taskToUpdate){
-        Project project = updateTask.getProjectId() == null ? null : findTaskProject(updateTask.getProjectId());
-        List<GanttUser> assignees = updateTask.getAssignees() == null ? null : findTaskAssignees(updateTask.getAssignees());
+        Project project = updateTask.getProjectId() == null ? null : projectService.findProject(updateTask.getProjectId());
+        List<GanttUser> assignees = updateTask.getAssignees() == null ? null : ganttUserService.findGanttUsers(updateTask.getAssignees());
         List<Task> dependencies = updateTask.getDependencies() == null ? null : findTaskDependencies(updateTask.getDependencies());
 
         taskToUpdate.setProject(project);
@@ -100,27 +102,6 @@ public class TaskService {
 
         taskToUpdate.setAssignees(assigneesIds);
         taskToUpdate.setDependencies(dependenciesIds);
-    }
-
-    private Project findTaskProject(Long projectId){
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> {
-                    log.error("Project with id = {} can not be find while saving task", projectId);
-                    throw new ProjectNotFoundException(projectId);
-                });
-    }
-
-    private List<GanttUser> findTaskAssignees(List<Long> ids){
-        List<GanttUser> assignees = new ArrayList<>();
-        for (Long id : ids){
-            GanttUser assignee = ganttUserRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.error("Team member with id = {} can not be find while saving task", id);
-                        throw new GanttUserNotFoundException(id);
-                    });
-            assignees.add(assignee);
-        }
-        return assignees;
     }
 
     private List<Task> findTaskDependencies(List<Long> ids){

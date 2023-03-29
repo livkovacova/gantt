@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -41,5 +42,7 @@ public class Project {
             inverseJoinColumns = {@JoinColumn(name = "gantt_user_id")}
     )
     private List<GanttUser> members;
+
+    private Instant startDate;
 
 }
