@@ -35,7 +35,7 @@ public class Project {
 
     private Integer resources;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "project_member",
             joinColumns = {@JoinColumn(name = "project_id")},

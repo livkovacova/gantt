@@ -92,4 +92,17 @@ public class ProjectService {
                     throw new ProjectNotFoundException(projectId);
                 });
     }
+
+    public Project deleteProject(Long projectId){
+        Project projectToDelete = projectRepository.findById(projectId)
+                .orElseThrow(() -> {
+                    log.error("Project with id = {} can not be find", projectId);
+                    throw new ProjectNotFoundException(projectId);
+                });
+        projectToDelete.setManager(null);
+        projectToDelete.setMembers(null);
+        projectRepository.save(projectToDelete);
+        projectRepository.deleteById(projectId);
+        return null;
+    }
 }

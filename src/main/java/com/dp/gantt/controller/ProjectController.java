@@ -42,4 +42,9 @@ public class ProjectController {
     public Project updateProject(@Valid @RequestBody ProjectRequestDto projectRequestDto){
         return projectService.updateProject(projectRequestDto);
     }
+
+    @DeleteMapping("/delete")
+    public Project deleteProject(@RequestParam Long id) {
+        return projectService.deleteProject(id);
+    }
 }
