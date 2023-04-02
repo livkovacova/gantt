@@ -84,11 +84,11 @@ public class TaskService {
     }
 
     private void updateDependenciesInTask(TaskDto updateTask, Task taskToUpdate){
-        Project project = updateTask.getProjectId() == null ? null : projectService.findProject(updateTask.getProjectId());
+        //Project project = updateTask.getGanttChartId() == null ? null : projectService.findProject(updateTask.getProjectId());
         List<GanttUser> assignees = updateTask.getAssignees() == null ? null : ganttUserService.findGanttUsers(updateTask.getAssignees());
         List<Task> dependencies = updateTask.getDependencies() == null ? null : findTaskDependencies(updateTask.getDependencies());
 
-        taskToUpdate.setProject(project);
+        //taskToUpdate.setProject(project);
         taskToUpdate.setAssignees(assignees);
         taskToUpdate.setDependencies(dependencies);
     }

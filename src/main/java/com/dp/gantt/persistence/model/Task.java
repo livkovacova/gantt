@@ -37,11 +37,6 @@ public class Task {
     private Boolean thirdParty;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "project_id")
-    @JsonBackReference
-    private Project project;
-
-    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "phase_id")
     @JsonBackReference
     private Phase phase;

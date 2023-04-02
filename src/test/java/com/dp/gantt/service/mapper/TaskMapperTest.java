@@ -1,9 +1,6 @@
 package com.dp.gantt.service.mapper;
 
-import com.dp.gantt.persistence.model.GanttUser;
-import com.dp.gantt.persistence.model.Project;
-import com.dp.gantt.persistence.model.Task;
-import com.dp.gantt.persistence.model.TaskPriority;
+import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.TaskDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -14,8 +11,8 @@ public class TaskMapperTest {
     private static TaskMapper taskMapper = Mappers.getMapper(TaskMapper.class);
     @Test
     void test_taskToTaskDto() {
-        Project project = new Project(1L, "projectName", "description", null, 2, null);
-        Task task = new Task(1L, "taskName", TaskPriority.LOW, 0L, 1, 2, true, project, null, null, null);
+        GanttChart ganttChart = new GanttChart(1L, null, null);
+        Task task = new Task(1L, "taskName", TaskPriority.LOW, 1L, 1, 1, false, null, null, null);
 
         TaskDto result = taskMapper.taskToTaskDto(task);
 

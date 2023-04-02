@@ -29,7 +29,7 @@ public class TaskDto {
     private Integer state;
     private Integer resources;
     private Boolean thirdParty;
-    private Long projectId;
+    private Long ganttChartId;
     private List<Long> dependencies;
     private List<Long> assignees;
 

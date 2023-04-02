@@ -29,7 +29,7 @@ public class Phase {
     private List<Task> tasks;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "gantt_chart_id")
     @JsonBackReference
-    private Project project;
+    private GanttChart ganttChart;
 }

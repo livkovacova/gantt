@@ -45,4 +45,10 @@ public class Project {
 
     private Instant startDate;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gantt_chart_id")
+    private GanttChart ganttChart;
+
+    private Boolean treeCreated;
+
 }

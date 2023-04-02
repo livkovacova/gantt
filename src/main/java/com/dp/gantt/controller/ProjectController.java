@@ -33,6 +33,11 @@ public class ProjectController {
         return projectService.getUsersProjects(userId, role, page, size, orderBy, direction);
     }
 
+    @GetMapping("/project")
+    public Project getProjectsByUserId(@RequestParam Long id){
+        return projectService.findProject(id);
+    }
+
     @PostMapping("/save")
     public Project createProject(@Valid @RequestBody ProjectRequestDto projectRequestDto){
         return projectService.saveProject(projectRequestDto);
