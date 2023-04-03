@@ -27,8 +27,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    private final GanttUserRepository ganttUserRepository;
-
     private final ProjectMapper projectMapper;
 
     private final GanttUserService ganttUserService;

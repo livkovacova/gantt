@@ -17,6 +17,7 @@ public class ProjectRequestDto {
     private String description;
     private Long manager;
     private Integer resources;
+    private String currency;
     private List<Long> members;
     private Instant startDate;
 }

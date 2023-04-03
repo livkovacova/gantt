@@ -18,6 +18,7 @@ public class ProjectResponseDto {
     private String description;
     private GanttUser manager;
     private Integer resources;
+    private String currency;
     private List<GanttUser> members;
     private Instant startDate;
 }

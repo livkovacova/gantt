@@ -35,6 +35,8 @@ public class Project {
 
     private Integer resources;
 
+    private String currency;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "project_member",
