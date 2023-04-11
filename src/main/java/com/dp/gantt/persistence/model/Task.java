@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -52,5 +53,6 @@ public class Task {
     )
     private List<GanttUser> assignees;
 
+    private Instant startDate;
 
 }

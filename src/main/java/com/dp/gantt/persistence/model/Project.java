@@ -51,6 +51,10 @@ public class Project {
     @JoinColumn(name = "gantt_chart_id")
     private GanttChart ganttChart;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dependency_tree_id")
+    private DependencyTree dependencyTree;
+
     private Boolean treeCreated;
 
 }
