@@ -15,11 +15,12 @@ public class PhaseDto {
     private Long workId;
     private String name;
     private List<TaskDto> tasks = new ArrayList<>();
-    private Long project;
+    private Long projectId;
 
-    public PhaseDto(Long id, String name){
+    public PhaseDto(Long id, String name, Long projectId){
         this.workId = id;
         this.name = name;
+        this.projectId = projectId;
     }
 
     public void addTask(TaskDto taskDto){

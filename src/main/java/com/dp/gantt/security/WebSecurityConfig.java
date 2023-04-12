@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/test/all").permitAll()
                 .requestMatchers("/api/projects/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/ganttChart/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());

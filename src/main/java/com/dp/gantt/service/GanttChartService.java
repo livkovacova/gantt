@@ -9,6 +9,7 @@ import com.dp.gantt.service.ganttChartGenerator.Predecessor;
 import com.dp.gantt.service.ganttChartGenerator.TaskE;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,13 +22,12 @@ import java.util.List;
 @Slf4j
 public class GanttChartService {
 
-    private GanttChartGenerator ganttChartGenerator;
-
+    @Autowired
     private ProjectService projectService;
 
     public GanttChartDto generateGanttChart(List<PhaseDto> phases, Long projectId){
         Instant projectStartDate = projectService.findProject(projectId).getStartDate();
-        ganttChartGenerator = new GanttChartGenerator(projectStartDate, projectId);
+        GanttChartGenerator ganttChartGenerator = new GanttChartGenerator(projectStartDate, projectId);
 
         for(PhaseDto phase: phases){
             phase.getTasks().forEach(taskDto -> {

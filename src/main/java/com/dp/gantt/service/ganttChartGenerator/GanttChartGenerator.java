@@ -6,6 +6,7 @@ import com.dp.gantt.persistence.model.dto.GanttChartDto;
 import com.dp.gantt.persistence.model.dto.PhaseDto;
 import com.dp.gantt.persistence.model.dto.TaskDto;
 import com.dp.gantt.service.TaskService;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -54,6 +55,7 @@ public class GanttChartGenerator {
             task.getPredecessors().forEach(pred -> {
                 predecessors.add(pred.getId());
             });
+            System.out.println("id"+task.getId());
             graph.put(task.getId(), predecessors);
         }
         return graph;
@@ -90,6 +92,9 @@ public class GanttChartGenerator {
         Map<Long, List<Long>> graph = buildGraph(tasks);
         Map<Long, Integer> durations = new HashMap<>();
 
+        System.out.println(tasks);
+        System.out.println(graph);
+        System.out.println(graph.keySet());
         // Calculate the minimal duration for each task
         for (long task : graph.keySet()) {
             computeMinimalDurationUtil(task, graph, durations);
@@ -391,7 +396,7 @@ public class GanttChartGenerator {
 
         for(TaskE taskE: tasks){
             if(currentPhase != taskE.getPhaseInfo().getId()){
-                phases.add(new PhaseDto(taskE.getPhaseInfo().getId(), taskE.getPhaseInfo().getName()));
+                phases.add(new PhaseDto(taskE.getPhaseInfo().getId(), taskE.getPhaseInfo().getName(), projectId));
                 currentPhase = taskE.getPhaseInfo().getId();
             }
             List<Long> predecessors = taskE.getPredecessors().stream().map(Predecessor::getId).toList();
