@@ -1,4 +1,4 @@
-package com.dp.gantt.service.example;
+package com.dp.gantt.service.ganttChartGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class Predecessor {
 
-    private Integer id;
+    private Long id;
 
     private boolean hidden;
 }

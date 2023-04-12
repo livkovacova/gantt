@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -12,15 +13,15 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskDto {
 
-    private Long id;
+    private Long workId;
     private String name;
     private TaskPriority priority;
-    private Long duration;
-    private Integer state;
+    private Integer duration;
     private Integer resources;
-    private Boolean thirdParty;
-    private Long ganttChartId;
-    private List<Long> dependencies;
+    private Boolean extendable;
+    private List<Long> predecessors;
     private List<Long> assignees;
+    private Instant startDate;
+    private Instant endDate;
 
 }

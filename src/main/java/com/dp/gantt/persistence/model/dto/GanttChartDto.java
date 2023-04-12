@@ -1,0 +1,23 @@
+package com.dp.gantt.persistence.model.dto;
+
+import com.dp.gantt.persistence.model.Phase;
+import com.dp.gantt.persistence.model.Project;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GanttChartDto {
+
+    private Long id;
+
+    private List<PhaseDto> phases;
+
+    private Long project;
+}

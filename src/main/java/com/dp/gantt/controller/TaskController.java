@@ -12,22 +12,22 @@ import java.util.List;
 @RestController
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
-
-    @PostMapping("/saveTask")
-    public Task createTask(@Valid @RequestBody TaskDto taskDto){
-        return taskService.saveTask(taskDto);
-    }
-
-    @PostMapping("/saveAllTasks")
-    public List<Task> createTasks(@Valid @RequestBody List<TaskDto> taskDtos){
-        return taskService.saveAllTasks(taskDtos);
-    }
-
-    @GetMapping("/getTask")
-    public TaskDto getTask(@RequestParam Long id){
-        return taskService.getTask(id);
-    }
+//    @Autowired
+//    private TaskService taskService;
+//
+//    @PostMapping("/saveTask")
+//    public Task createTask(@Valid @RequestBody TaskDto taskDto){
+//        return taskService.saveTask(taskDto);
+//    }
+//
+//    @PostMapping("/saveAllTasks")
+//    public List<Task> createTasks(@Valid @RequestBody List<TaskDto> taskDtos){
+//        return taskService.saveAllTasks(taskDtos);
+//    }
+//
+//    @GetMapping("/getTask")
+//    public TaskDto getTask(@RequestParam Long id){
+//        return taskService.getTask(id);
+//    }
 
 }

@@ -1,10 +1,10 @@
 package com.dp.gantt.persistence.model.dto;
 
-import com.dp.gantt.persistence.model.Task;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,8 +12,17 @@ import java.util.List;
 @AllArgsConstructor
 public class PhaseDto {
 
-    private Long id;
+    private Long workId;
     private String name;
-    private List<Long> tasks;
+    private List<TaskDto> tasks = new ArrayList<>();
     private Long project;
+
+    public PhaseDto(Long id, String name){
+        this.workId = id;
+        this.name = name;
+    }
+
+    public void addTask(TaskDto taskDto){
+        this.tasks.add(taskDto);
+    }
 }

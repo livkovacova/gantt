@@ -1,4 +1,4 @@
-package com.dp.gantt.service.example;
+package com.dp.gantt.service.ganttChartGenerator;
 
 public enum Priority {
     LOW,
