@@ -65,6 +65,9 @@ public class GanttChartService {
         ganttChartGenerator.calculateDates();
 
         //uloz ganttchart do db, nastav projektu ganttchart, nastav ye gantt chart je v projekte spraveny
+        //pri ukladani do DB kazdy task ine id ako workId, priradene k fazam cez phaseID, cize phaseID=phase.id
+        //kazda faza tiez jedinecne ID, priradenie fazy k gantt chartu cez projectID
+        //kazdy gantt ma projectID, tym je priradeny k projektu
         return ganttChartGenerator.generateGanttChartResult();
     }
 }

@@ -1,9 +1,5 @@
 package com.dp.gantt.persistence.model.dto;
 
-import com.dp.gantt.persistence.model.Phase;
-import com.dp.gantt.persistence.model.Project;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

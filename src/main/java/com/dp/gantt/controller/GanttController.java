@@ -18,7 +18,7 @@ public class GanttController {
     @Autowired
     private GanttChartService ganttChartService;
 
-    @PostMapping()
+    @PostMapping("/create")
     public GanttChartDto createGanttChart(@Valid @RequestBody GanttRequestDto ganttRequestDto){
         return ganttChartService.generateGanttChart(ganttRequestDto.getPhases(), ganttRequestDto.getProjectId());
     }
