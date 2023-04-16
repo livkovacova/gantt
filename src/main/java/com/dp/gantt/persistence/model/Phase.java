@@ -24,12 +24,7 @@ public class Phase {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "phase")
-    @JsonManagedReference
-    private List<Task> tasks;
-
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     @JoinColumn(name = "gantt_chart_id")
-    @JsonBackReference
     private GanttChart ganttChart;
 }

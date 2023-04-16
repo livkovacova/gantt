@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,8 @@ public class PhaseDto {
     private String name;
     private List<TaskDto> tasks = new ArrayList<>();
     private Long projectId;
+
+    private Optional<Long> realId;
 
     public PhaseDto(Long id, String name, Long projectId){
         this.workId = id;

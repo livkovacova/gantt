@@ -13,19 +13,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class TaskService {
 
-//    private final TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 //
 //    private final ProjectRepository projectRepository;
 //
 //    private final TaskMapper taskMapper;
 //
-//    private final GanttUserService ganttUserService;
+    private final GanttUserService ganttUserService;
 //
 //    private final ProjectService projectService;
 //
@@ -45,16 +46,13 @@ public class TaskService {
 //        return taskRepository.saveAll(tasks);
 //    }
 //
-//    public TaskDto getTask(Long id){
-//        Task task = taskRepository.findById(id)
-//                .orElseThrow(() -> {
-//                    log.error("Task with id = {} can not be find while getting task", id);
-//                    throw new TaskNotFoundException(id);
-//                });
-//        TaskDto foundTask = taskMapper.taskToTaskDto(task);
-//        updateDependenciesInTaskDto(task, foundTask);
-//        return foundTask;
-//    }
+    public Task getTask(Optional<Long> id){
+        return taskRepository.findById(id.orElse(-1L))
+                .orElseThrow(() -> {
+                    log.error("Task with id = {} can not be find while getting task", id);
+                    throw new TaskNotFoundException(id.orElse(-1L));
+                });
+    }
 //
 //    public Task updateTask(TaskDto taskDto){
 //        Long updateTaskId = taskDto.getId();
@@ -79,16 +77,18 @@ public class TaskService {
 //        );
 //    }
 //
-//    private void updateDependenciesInTask(TaskDto updateTask, Task taskToUpdate){
-//        //Project project = updateTask.getGanttChartId() == null ? null : projectService.findProject(updateTask.getProjectId());
-//        List<GanttUser> assignees = updateTask.getAssignees() == null ? null : ganttUserService.findGanttUsers(updateTask.getAssignees());
-//        List<Task> dependencies = updateTask.getPredecessors() == null ? null : findTaskDependencies(updateTask.getPredecessors());
-//
-//        //taskToUpdate.setProject(project);
-//        taskToUpdate.setAssignees(assignees);
-//        taskToUpdate.setPredecessors(dependencies);
-//    }
-//
+    public Task updateDependenciesInTask(TaskDto updateTask, Optional<Long> id, Long ganttChartId){
+        //Project project = updateTask.getGanttChartId() == null ? null : projectService.findProject(updateTask.getProjectId());
+        Task taskToUpdate = getTask(id);
+        List<GanttUser> assignees = updateTask.getAssignees() == null ? null : ganttUserService.findGanttUsers(updateTask.getAssignees());
+        List<Task> dependencies = updateTask.getPredecessors() == null ? null : findTaskDependencies(updateTask.getPredecessors(), ganttChartId);
+
+        //taskToUpdate.setProject(project);
+        taskToUpdate.setAssignees(assignees);
+        taskToUpdate.setPredecessors(dependencies);
+        return taskToUpdate;
+    }
+////
 //    private void updateDependenciesInTaskDto(Task updateTask, TaskDto taskToUpdate){
 //        List<Long> assigneesIds = new ArrayList<>();
 //        List<Long> dependenciesIds = new ArrayList<>();
@@ -100,18 +100,18 @@ public class TaskService {
 //        taskToUpdate.setPredecessors(dependenciesIds);
 //    }
 //
-//    private List<Task> findTaskDependencies(List<Long> ids){
-//        List<Task> dependencies = new ArrayList<>();
-//        for (Long id : ids){
-//            Task dependency = taskRepository.findById(id)
-//                    .orElseThrow(() -> {
-//                        log.error("Task with id = {} can not be find while saving task", id);
-//                        throw new TaskNotFoundException(id);
-//                    });
-//            dependencies.add(dependency);
-//        }
-//        return dependencies;
-//    }
+    private List<Task> findTaskDependencies(List<Long> ids, Long ganttChartId){
+        List<Task> dependencies = new ArrayList<>();
+        for (Long id : ids){
+            Task dependency = taskRepository.findByWorkIdAndAndPhase_GanttChart_Id(id, ganttChartId)
+                    .orElseThrow(() -> {
+                        log.error("Task with id = {} can not be find while saving task", id);
+                        throw new TaskNotFoundException(id);
+                    });
+            dependencies.add(dependency);
+        }
+        return dependencies;
+    }
 
 
 }

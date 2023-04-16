@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -23,5 +24,19 @@ public class TaskDto {
     private List<Long> assignees;
     private Instant startDate;
     private Instant endDate;
+    private Optional<Long> realId;
 
+
+    public TaskDto(Long workId, String name, TaskPriority priority, Integer duration, Integer resources, Boolean extendable, List<Long> predecessors, List<Long> assignees, Instant startDate, Instant endDate) {
+        this.workId = workId;
+        this.name = name;
+        this.priority = priority;
+        this.duration = duration;
+        this.resources = resources;
+        this.extendable = extendable;
+        this.predecessors = predecessors;
+        this.assignees = assignees;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

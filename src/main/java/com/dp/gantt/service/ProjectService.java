@@ -7,7 +7,6 @@ import com.dp.gantt.persistence.model.Project;
 import com.dp.gantt.persistence.model.RoleType;
 import com.dp.gantt.persistence.model.dto.ProjectRequestDto;
 import com.dp.gantt.persistence.model.dto.ProjectResponseDto;
-import com.dp.gantt.persistence.repository.GanttUserRepository;
 import com.dp.gantt.persistence.repository.ProjectRepository;
 import com.dp.gantt.service.mapper.ProjectMapper;
 import lombok.AllArgsConstructor;
@@ -83,12 +82,37 @@ public class ProjectService {
         project.setMembers(members);
     }
 
+    private void updateDependenciesInProjectResponse(ProjectResponseDto projectResponseDto, Project project){
+        GanttUser manager = project.getManager();
+        List<GanttUser> members = project.getMembers();
+
+        projectResponseDto.setManager(manager);
+        projectResponseDto.setMembers(members);
+    }
+
     public Project findProject(Long projectId){
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> {
                     log.error("Project with id = {} can not be find", projectId);
                     throw new ProjectNotFoundException(projectId);
                 });
+    }
+
+    public ProjectResponseDto findProjectForResponse(Long projectId){
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> {
+                    log.error("Project with id = {} can not be find", projectId);
+                    throw new ProjectNotFoundException(projectId);
+                });
+        ProjectResponseDto projectResponseDto = projectMapper.projectToProjectDto(project);
+        if(project.getTreeCreated() != null && project.getTreeCreated()){
+            projectResponseDto.setTreeCreated(true);
+        }
+        if(project.getGanttChart() != null){
+            projectResponseDto.setGanttCreated(true);
+        }
+        updateDependenciesInProjectResponse(projectResponseDto, project);
+        return projectResponseDto;
     }
 
     public Project deleteProject(Long projectId){

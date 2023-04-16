@@ -19,10 +19,6 @@ public class GanttChart {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ganttChart")
-    @JsonManagedReference
-    private List<Phase> phases;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;

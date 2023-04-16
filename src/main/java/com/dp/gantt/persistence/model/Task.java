@@ -22,17 +22,18 @@ public class Task {
     @Id
     @GeneratedValue
     private Long id;
+
+    private Long workId;
     private String name;
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
-    private Long duration;
+    private Integer duration;
     private Integer resources;
 
     private boolean extendable;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     @JoinColumn(name = "phase_id")
-    @JsonBackReference
     private Phase phase;
 
     @ManyToMany

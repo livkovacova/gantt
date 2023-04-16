@@ -34,8 +34,8 @@ public class ProjectController {
     }
 
     @GetMapping("/project")
-    public Project getProjectsByUserId(@RequestParam Long id){
-        return projectService.findProject(id);
+    public ProjectResponseDto getProjectsById(@RequestParam Long id){
+        return projectService.findProjectForResponse(id);
     }
 
     @PostMapping("/save")

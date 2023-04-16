@@ -21,4 +21,8 @@ public class ProjectResponseDto {
     private String currency;
     private List<GanttUser> members;
     private Instant startDate;
+
+    private boolean ganttCreated;
+
+    private boolean treeCreated;
 }
