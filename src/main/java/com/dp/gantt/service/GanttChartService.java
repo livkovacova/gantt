@@ -3,10 +3,7 @@ package com.dp.gantt.service;
 import com.dp.gantt.exceptions.GanttChartIsCyclicException;
 import com.dp.gantt.exceptions.PhaseNotFoundException;
 import com.dp.gantt.exceptions.TaskNotFoundException;
-import com.dp.gantt.persistence.model.GanttChart;
-import com.dp.gantt.persistence.model.Phase;
-import com.dp.gantt.persistence.model.Project;
-import com.dp.gantt.persistence.model.Task;
+import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.GanttChartDto;
 import com.dp.gantt.persistence.model.dto.PhaseDto;
 import com.dp.gantt.persistence.model.dto.TaskDto;
@@ -87,6 +84,35 @@ public class GanttChartService {
         ganttChartGenerator.calculateDates();
 
         return ganttChartGenerator.generateGanttChartResult();
+    }
+
+    public GanttChartDto getGanttChartByProjectId(Long id){
+        List<PhaseDto> phases = new ArrayList<>();
+        GanttChart ganttChart = projectService.findProject(id).getGanttChart();
+
+        List<Phase> ganttPhases = phaseRepository.findAllByGanttChart_Id(ganttChart.getId());
+        ganttPhases.forEach(phase -> {
+            PhaseDto newPhase = new PhaseDto(phase.getId(), phase.getName(), id);
+            List<Task> tasks = taskRepository.findAllByPhase_IdAndPhase_GanttChart_Id(phase.getId(), ganttChart.getId());
+            tasks.forEach(task -> {
+                TaskDto taskDto = new TaskDto(
+                        task.getWorkId(),
+                        task.getName(),
+                        task.getPriority(),
+                        task.getDuration(),
+                        task.getResources(),
+                        task.isExtendable(),
+                        task.getPredecessors().stream().map(Task::getWorkId).toList(),
+                        task.getAssignees().stream().map(GanttUser::getId).toList(),
+                        task.getStartDate(),
+                        task.getEndDate()
+                );
+                newPhase.addTask(taskDto);
+            });
+            phases.add(newPhase);
+        });
+
+        return new GanttChartDto(ganttChart.getId(), phases, id);
     }
 
     public void addGanttChartToProject(GanttChartDto ganttChartDto){

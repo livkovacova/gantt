@@ -20,8 +20,8 @@ public class PhaseDto {
 
     private Optional<Long> realId;
 
-    public PhaseDto(Long id, String name, Long projectId){
-        this.workId = id;
+    public PhaseDto(Long workId, String name, Long projectId){
+        this.workId = workId;
         this.name = name;
         this.projectId = projectId;
     }

@@ -24,4 +24,9 @@ public class GanttController {
     public void saveGanttChart(@Valid @RequestBody GanttChartDto ganttChart){
         ganttChartService.addGanttChartToProject(ganttChart);
     }
+
+    @GetMapping
+    public GanttChartDto getProjectGanttChart(@RequestParam Long id){
+        return ganttChartService.getGanttChartByProjectId(id);
+    }
 }
