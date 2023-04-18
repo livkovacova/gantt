@@ -28,12 +28,12 @@ public class GanttChartGenerator {
 
     private Long projectId;
 
-    public GanttChartGenerator(Instant startDate, Long projectId){
+    public GanttChartGenerator(Instant startDate, Long projectId) {
         this.startDate = startDate;
         this.projectId = projectId;
     }
 
-    public boolean isGraphCyclic(){
+    public boolean isGraphCyclic() {
         Map<Long, List<Long>> graph = buildGraph(tasks);
         Set<Long> visited = new HashSet<>();
         Set<Long> recStack = new HashSet<>();
@@ -55,7 +55,7 @@ public class GanttChartGenerator {
             task.getPredecessors().forEach(pred -> {
                 predecessors.add(pred.getId());
             });
-            System.out.println("id"+task.getId());
+            System.out.println("id" + task.getId());
             graph.put(task.getId(), predecessors);
         }
         return graph;
@@ -144,8 +144,8 @@ public class GanttChartGenerator {
             earliestStart.put(task.getId(), maxDuration);
             Instant newStartDate = startDate.plus(maxDuration, ChronoUnit.DAYS);
             Instant minStartDate = task.getMinimalStartDate();
-            if(minStartDate != null){
-                if(newStartDate.isBefore(minStartDate)){
+            if (minStartDate != null) {
+                if (newStartDate.isBefore(minStartDate)) {
                     maxDuration += (int) Duration.between(newStartDate, minStartDate).toDays();
                 }
             }
@@ -158,71 +158,64 @@ public class GanttChartGenerator {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
-    public void sortNonExtendableParallelTasks(){
+    public void sortNonExtendableParallelTasks() {
         boolean change = false;
-        for (TaskE task: tasks){
-            if (!task.isExtendable()) {
-
-                for(TaskE t: tasks) {
-                    if (t.getId() != task.getId() && !(t.getStartDate().isAfter(task.getEndDate()) || t.getEndDate().isBefore(task.getStartDate()))) {
-                        List<Long> sharedEmployees = getSharedEmployees(t, task);
-                        if (!sharedEmployees.isEmpty()) {
-                            if(listEqualsIgnoreOrder(task.getAssignees(), t.getAssignees())){
-                                if(t.getPriority().ordinal() > task.getPriority().ordinal()){
-                                    if(!getPredById(task.getPredecessors(), t.getId())) {
-                                        Predecessor newPred = new Predecessor(t.getId(), true);
-                                        task.addPredecessor(newPred);
-                                        System.out.println("Prva vetva Added pred like this "+task.getId()+" "+t.getId());
-                                        change=true;
-                                    }
+        for (TaskE task : tasks) {
+            for (TaskE t : tasks) {
+                if (t.getId() != task.getId() && !(t.getStartDate().isAfter(task.getEndDate()) || t.getEndDate().isBefore(task.getStartDate()))) {
+                    List<Long> sharedEmployees = getSharedEmployees(t, task);
+                    if (!sharedEmployees.isEmpty()) {
+                        if (listEqualsIgnoreOrder(task.getAssignees(), t.getAssignees())) {
+                            if (t.getPriority().ordinal() > task.getPriority().ordinal()) {
+                                if (!getPredById(task.getPredecessors(), t.getId())) {
+                                    Predecessor newPred = new Predecessor(t.getId(), true);
+                                    task.addPredecessor(newPred);
+                                    System.out.println("Prva vetva Added pred like this " + task.getId() + " " + t.getId());
+                                    change = true;
                                 }
-                                else{
-                                    if(!getPredById(t.getPredecessors(), task.getId())) {
-                                        Predecessor newPred = new Predecessor(task.getId(), true);
-                                        t.addPredecessor(newPred);
-                                        System.out.println("Druha vetva Added pred like this "+t.getId()+" "+task.getId());
-                                        change=true;
-                                    }
+                            } else {
+                                if (!getPredById(t.getPredecessors(), task.getId())) {
+                                    Predecessor newPred = new Predecessor(task.getId(), true);
+                                    t.addPredecessor(newPred);
+                                    System.out.println("Druha vetva Added pred like this " + t.getId() + " " + task.getId());
+                                    change = true;
                                 }
                             }
-                            else {
-                                Instant intersectionStart = task.getStartDate().isBefore(t.getStartDate()) ? t.getStartDate() : task.getStartDate();
-                                Instant intersectionEnd = task.getEndDate().isBefore(t.getEndDate()) ? task.getEndDate() : t.getEndDate();
-                                int intersectionDuration = (int) Duration.between(intersectionStart, intersectionEnd).toDays() + 1;
+                        } else {
+                            Instant intersectionStart = task.getStartDate().isBefore(t.getStartDate()) ? t.getStartDate() : task.getStartDate();
+                            Instant intersectionEnd = task.getEndDate().isBefore(t.getEndDate()) ? task.getEndDate() : t.getEndDate();
+                            int intersectionDuration = (int) Duration.between(intersectionStart, intersectionEnd).toDays() + 1;
 
-                                double sharedEmployeesWorkOnOtherTask = getSharedEmployeesDuration(t, sharedEmployees);
-                                double nonSharedEmployeesWorkOnOtherTask = t.getDuration() - sharedEmployeesWorkOnOtherTask;
+                            double sharedEmployeesWorkOnOtherTask = getSharedEmployeesDuration(t, sharedEmployees);
+                            double nonSharedEmployeesWorkOnOtherTask = t.getDuration() - sharedEmployeesWorkOnOtherTask;
 
-                                double sharedEmployeesWorkOnThisTask = getSharedEmployeesDuration(task, sharedEmployees);
-                                double nonSharedEmployeesWorkOnThisTask = task.getDuration() - sharedEmployeesWorkOnThisTask;
+                            double sharedEmployeesWorkOnThisTask = getSharedEmployeesDuration(task, sharedEmployees);
+                            double nonSharedEmployeesWorkOnThisTask = task.getDuration() - sharedEmployeesWorkOnThisTask;
 
-                                if(intersectionDuration <= nonSharedEmployeesWorkOnOtherTask || intersectionDuration <= nonSharedEmployeesWorkOnThisTask){
+                            if (intersectionDuration <= nonSharedEmployeesWorkOnOtherTask || intersectionDuration <= nonSharedEmployeesWorkOnThisTask) {
+                                System.out.println("Leave it like this");
+                            } else {
+                                if (intersectionDuration < nonSharedEmployeesWorkOnOtherTask + nonSharedEmployeesWorkOnThisTask ||
+                                        intersectionDuration > sharedEmployeesWorkOnOtherTask / sharedEmployees.size() + sharedEmployeesWorkOnThisTask / sharedEmployees.size()) {
                                     System.out.println("Leave it like this");
-                                }
-                                else {
-                                    if(intersectionDuration < nonSharedEmployeesWorkOnOtherTask + nonSharedEmployeesWorkOnThisTask ||
-                                    intersectionDuration > sharedEmployeesWorkOnOtherTask/sharedEmployees.size() + sharedEmployeesWorkOnThisTask/sharedEmployees.size()){
-                                        System.out.println("Leave it like this");
-                                    }
-                                    else{
-                                        if(task.getPriority().ordinal() >= t.getPriority().ordinal()){
-                                            Instant minimalStartDate = task.getEndDate().minus((int) Math.ceil(nonSharedEmployeesWorkOnThisTask) - 1, ChronoUnit.DAYS);
-                                            Instant oldStartDate = t.getStartDate();
-                                            t.setMinimalStartDate(minimalStartDate);
-                                            t.setStartDate(minimalStartDate);
-                                            t.setEndDate(minimalStartDate.plus(t.getDuration() - 1, ChronoUnit.DAYS));
-                                            int gap = (int) Duration.between(oldStartDate, minimalStartDate).toDays();
-                                            t.setAddedGapDays(gap);
-                                            System.out.println("Task postponed like this "+t.getId()+" "+t.getStartDate());
-                                            change=true;
-                                        }
+                                } else {
+                                    if (task.getPriority().ordinal() >= t.getPriority().ordinal()) {
+                                        Instant minimalStartDate = task.getEndDate().minus((int) Math.ceil(nonSharedEmployeesWorkOnThisTask) - 1, ChronoUnit.DAYS);
+                                        Instant oldStartDate = t.getStartDate();
+                                        t.setMinimalStartDate(minimalStartDate);
+                                        t.setStartDate(minimalStartDate);
+                                        t.setEndDate(minimalStartDate.plus(t.getDuration() - 1, ChronoUnit.DAYS));
+                                        int gap = (int) Duration.between(oldStartDate, minimalStartDate).toDays();
+                                        t.setAddedGapDays(gap);
+                                        System.out.println("Task postponed like this " + t.getId() + " " + t.getStartDate());
+                                        change = true;
                                     }
                                 }
                             }
-                            if(change){
-                                calculateDates();
-                                sortNonExtendableParallelTasks();
-                            }
+                        }
+                        if (change) {
+                            calculateDates();
+                            sortNonExtendableParallelTasks();
                         }
                     }
                 }
@@ -233,27 +226,27 @@ public class GanttChartGenerator {
 
     public void extendTasksDuration() {
         boolean change = false;
-        for(TaskE task: tasks) {
+        for (TaskE task : tasks) {
             // Check if task is extendable
-            if (task.isExtendable()) {
+            //if (task.isExtendable()) {
 
-                // Calculate additional days
+            // Calculate additional days
 //            double additionalDays = 0.0;
 //            Map<Integer, Double> assigneesWeights = new HashMap<>();
 //            task.getAssignees().forEach(assignee -> assigneesWeights.put(assignee, 1.0));
-                for (TaskE t : tasks) {
-                    // Check if task t is parallel and has shared employees
-                    if (t.getId() != task.getId() && !(t.getStartDate().isAfter(task.getEndDate()) || t.getEndDate().isBefore(task.getStartDate()))) {
-                        List<Long> sharedEmployees = getSharedEmployees(t, task);
-                        if (!sharedEmployees.isEmpty()) {
-                            if (listEqualsIgnoreOrder(task.getAssignees(), t.getAssignees())) {
-                                if (t.getPriority().ordinal() >= task.getPriority().ordinal()) {
-                                    if (!getPredById(task.getPredecessors(), t.getId())) {
-                                        Predecessor newPred = new Predecessor(t.getId(), true);
-                                        task.addPredecessor(newPred);
-                                        change = true;
-                                    }
+            for (TaskE t : tasks) {
+                // Check if task t is parallel and has shared employees
+                if (t.getId() != task.getId() && !(t.getStartDate().isAfter(task.getEndDate()) || t.getEndDate().isBefore(task.getStartDate()))) {
+                    List<Long> sharedEmployees = getSharedEmployees(t, task);
+                    if (!sharedEmployees.isEmpty()) {
+                        if (listEqualsIgnoreOrder(task.getAssignees(), t.getAssignees())) {
+                            if (t.getPriority().ordinal() >= task.getPriority().ordinal()) {
+                                if (!getPredById(task.getPredecessors(), t.getId())) {
+                                    Predecessor newPred = new Predecessor(t.getId(), true);
+                                    task.addPredecessor(newPred);
+                                    change = true;
                                 }
+                            }
 //                                else {
 //                                    if (!getPredById(t.getPredecessors(), task.getId())) {
 //                                        Predecessor newPred = new Predecessor(task.getId(), true);
@@ -262,49 +255,49 @@ public class GanttChartGenerator {
 //                                        System.out.println("Druha vetva Added pred like this "+t.getId()+" "+task.getId());
 //                                    }
 //                                }
+                        } else {
+                            Instant intersectionStart = task.getStartDate().isBefore(t.getStartDate()) ? t.getStartDate() : task.getStartDate();
+                            Instant intersectionEnd = task.getEndDate().isBefore(t.getEndDate()) ? task.getEndDate() : t.getEndDate();
+                            int intersectionDuration = (int) Duration.between(intersectionStart, intersectionEnd).toDays() + 1;
+
+                            double sharedEmployeesWorkOnOtherTask = getSharedEmployeesDuration(t, sharedEmployees);
+                            double nonSharedEmployeesWorkOnOtherTask = t.getDuration() - sharedEmployeesWorkOnOtherTask;
+
+                            double sharedEmployeesWorkOnThisTask = getSharedEmployeesDuration(task, sharedEmployees);
+                            double nonSharedEmployeesWorkOnThisTask = task.getDuration() - sharedEmployeesWorkOnThisTask;
+
+                            if ((intersectionDuration <= nonSharedEmployeesWorkOnOtherTask || intersectionDuration <= nonSharedEmployeesWorkOnThisTask)
+                            ) {
+                                System.out.println("Leave it like this " + task.getId() + " " + t.getId());
                             } else {
-                                Instant intersectionStart = task.getStartDate().isBefore(t.getStartDate()) ? t.getStartDate() : task.getStartDate();
-                                Instant intersectionEnd = task.getEndDate().isBefore(t.getEndDate()) ? task.getEndDate() : t.getEndDate();
-                                int intersectionDuration = (int) Duration.between(intersectionStart, intersectionEnd).toDays() + 1;
-
-                                double sharedEmployeesWorkOnOtherTask = getSharedEmployeesDuration(t, sharedEmployees);
-                                double nonSharedEmployeesWorkOnOtherTask = t.getDuration() - sharedEmployeesWorkOnOtherTask;
-
-                                double sharedEmployeesWorkOnThisTask = getSharedEmployeesDuration(task, sharedEmployees);
-                                double nonSharedEmployeesWorkOnThisTask = task.getDuration() - sharedEmployeesWorkOnThisTask;
-
-                                if ((intersectionDuration <= nonSharedEmployeesWorkOnOtherTask || intersectionDuration <= nonSharedEmployeesWorkOnThisTask)
-                                ) {
-                                    System.out.println("Leave it like this "+task.getId()+" "+t.getId());
+                                if (intersectionDuration < nonSharedEmployeesWorkOnOtherTask + nonSharedEmployeesWorkOnThisTask ||
+                                        intersectionDuration > sharedEmployeesWorkOnOtherTask / sharedEmployees.size() + sharedEmployeesWorkOnThisTask / sharedEmployees.size()) {
+                                    System.out.println("Leave it like this " + task.getId() + " " + t.getId());
                                 } else {
-                                    if (intersectionDuration < nonSharedEmployeesWorkOnOtherTask + nonSharedEmployeesWorkOnThisTask ||
-                                            intersectionDuration > sharedEmployeesWorkOnOtherTask / sharedEmployees.size() + sharedEmployeesWorkOnThisTask / sharedEmployees.size()) {
-                                        System.out.println("Leave it like this "+task.getId()+" "+t.getId());
-                                    } else {
-                                        if(task.getPriority().ordinal() >= t.getPriority().ordinal()) {
+                                    if (task.getPriority().ordinal() >= t.getPriority().ordinal()) {
 
-                                            Instant minimalStartDate = task.getEndDate().minus((int) Math.ceil(nonSharedEmployeesWorkOnOtherTask) - 1, ChronoUnit.DAYS);
-                                            Instant oldStartDate = t.getStartDate();
-                                            t.setMinimalStartDate(minimalStartDate);
-                                            t.setStartDate(minimalStartDate);
-                                            t.setEndDate(minimalStartDate.plus(t.getDuration() - 1, ChronoUnit.DAYS));
-                                            int gap = (int) Duration.between(oldStartDate, minimalStartDate).toDays();
-                                            t.setAddedGapDays(gap);
-                                            change = true;
-                                            System.out.println("Task postponed like this " + t.getId() + " " + t.getStartDate());
-                                        }
+                                        Instant minimalStartDate = task.getEndDate().minus((int) Math.ceil(nonSharedEmployeesWorkOnOtherTask) - 1, ChronoUnit.DAYS);
+                                        Instant oldStartDate = t.getStartDate();
+                                        t.setMinimalStartDate(minimalStartDate);
+                                        t.setStartDate(minimalStartDate);
+                                        t.setEndDate(minimalStartDate.plus(t.getDuration() - 1, ChronoUnit.DAYS));
+                                        int gap = (int) Duration.between(oldStartDate, minimalStartDate).toDays();
+                                        t.setAddedGapDays(gap);
+                                        change = true;
+                                        System.out.println("Task postponed like this " + t.getId() + " " + t.getStartDate());
                                     }
                                 }
-                                //additionalDays += getSharedEmployeesDuration(t, sharedEmployees);
                             }
-                            if (change) {
-                                calculateDates();
-                                extendTasksDuration();
-                            }
+                            //additionalDays += getSharedEmployeesDuration(t, sharedEmployees);
+                        }
+                        if (change) {
+                            calculateDates();
+                            extendTasksDuration();
                         }
                     }
-
                 }
+
+                // }
 //            double newDuration = (task.getDuration() * task.getAssignees().size()) / getSumOfWeights(assigneesWeights, task.getAssignees());
 //            double additionalTimeFromEPT = newDuration - task.getDuration();
 //            additionalDays += additionalTimeFromEPT;
@@ -315,34 +308,34 @@ public class GanttChartGenerator {
         }
     }
 
-    private boolean getPredById(List<Predecessor> predecessors, Long id){
-        for(Predecessor predecessor: predecessors){
-            if(predecessor.getId() == id){
+    private boolean getPredById(List<Predecessor> predecessors, Long id) {
+        for (Predecessor predecessor : predecessors) {
+            if (predecessor.getId() == id) {
                 return true;
             }
         }
         return false;
     }
 
-    private double getSumOfWeights(Map<Integer, Double> weights, List<Integer> assignees){
+    private double getSumOfWeights(Map<Integer, Double> weights, List<Integer> assignees) {
         double sum = 0;
-        for(Integer assignee: assignees){
-            sum += 1.0/weights.get(assignee);
+        for (Integer assignee : assignees) {
+            sum += 1.0 / weights.get(assignee);
         }
         return sum;
     }
 
-    private void increaseWeightOfAssignees(Map<Integer, Double> assigneesWeights, List<Integer> sharedEmployees){
-        for(Integer sharedEmployee: sharedEmployees){
+    private void increaseWeightOfAssignees(Map<Integer, Double> assigneesWeights, List<Integer> sharedEmployees) {
+        for (Integer sharedEmployee : sharedEmployees) {
             assigneesWeights.replace(sharedEmployee, assigneesWeights.get(sharedEmployee) + 1);
         }
     }
 
     public List<Long> getSharedEmployees(TaskE t1, TaskE t2) {
         List<Long> sharedEmployees = new ArrayList<>();
-        for(Long e1: t1.getAssignees()) {
-            for(Long e2: t2.getAssignees()) {
-                if(e1.equals(e2)) {
+        for (Long e1 : t1.getAssignees()) {
+            for (Long e2 : t2.getAssignees()) {
+                if (e1.equals(e2)) {
                     sharedEmployees.add(e1);
                     break;
                 }
@@ -353,18 +346,18 @@ public class GanttChartGenerator {
 
     public int getNumberOfParallelTasksWithEmployees(TaskE t, List<Integer> sharedEmployees) {
         int count = 0;
-        for(TaskE task: tasks) {
-            if(task.getId() != t.getId()) {
+        for (TaskE task : tasks) {
+            if (task.getId() != t.getId()) {
                 List<Long> temp = getSharedEmployees(t, task);
-                if(temp.size() > 0) {
+                if (temp.size() > 0) {
                     boolean allShared = true;
-                    for(Integer e: sharedEmployees) {
-                        if(!temp.contains(e)) {
+                    for (Integer e : sharedEmployees) {
+                        if (!temp.contains(e)) {
                             allShared = false;
                             break;
                         }
                     }
-                    if(allShared) {
+                    if (allShared) {
                         count++;
                     }
                 }
@@ -374,7 +367,7 @@ public class GanttChartGenerator {
     }
 
     public double getSharedEmployeesDuration(TaskE t, List<Long> sharedEmployees) {
-        return sharedEmployees.size()*((double) t.getDuration()/t.getAssignees().size());
+        return sharedEmployees.size() * ((double) t.getDuration() / t.getAssignees().size());
     }
 
 
@@ -394,8 +387,8 @@ public class GanttChartGenerator {
         List<PhaseDto> phases = new ArrayList<>();
         Long currentPhase = -1L;
 
-        for(TaskE taskE: tasks){
-            if(currentPhase != taskE.getPhaseInfo().getId()){
+        for (TaskE taskE : tasks) {
+            if (currentPhase != taskE.getPhaseInfo().getId()) {
                 phases.add(new PhaseDto(taskE.getPhaseInfo().getId(), taskE.getPhaseInfo().getName(), projectId));
                 currentPhase = taskE.getPhaseInfo().getId();
             }
@@ -406,7 +399,6 @@ public class GanttChartGenerator {
                     taskE.getPriority(),
                     taskE.getDuration(),
                     taskE.getResources(),
-                    taskE.isExtendable(),
                     predecessors,
                     taskE.getAssignees(),
                     taskE.getStartDate(),
@@ -419,10 +411,10 @@ public class GanttChartGenerator {
         return new GanttChartDto(null, phases, projectId);
     }
 
-    private PhaseDto findPhaseById(Long id, List<PhaseDto> phases){
+    private PhaseDto findPhaseById(Long id, List<PhaseDto> phases) {
         PhaseDto toReturn = null;
-        for(PhaseDto phaseDto: phases){
-            if(phaseDto.getWorkId() == id){
+        for (PhaseDto phaseDto : phases) {
+            if (phaseDto.getWorkId() == id) {
                 toReturn = phaseDto;
             }
         }

@@ -30,16 +30,14 @@ public class Task {
     private Integer duration;
     private Integer resources;
 
-    private boolean extendable;
-
     @ManyToOne
     @JoinColumn(name = "phase_id")
     private Phase phase;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Task> predecessors;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "task_assignees",
             joinColumns = {@JoinColumn(name = "task_id")},

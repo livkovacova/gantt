@@ -62,7 +62,6 @@ public class GanttChartService {
                         predecessors,
                         taskDto.getAssignees(),
                         taskDto.getPriority(),
-                        taskDto.getExtendable(),
                         phase.getWorkId(),
                         phase.getName(),
                         taskDto.getResources()
@@ -101,7 +100,6 @@ public class GanttChartService {
                         task.getPriority(),
                         task.getDuration(),
                         task.getResources(),
-                        task.isExtendable(),
                         task.getPredecessors().stream().map(Task::getWorkId).toList(),
                         task.getAssignees().stream().map(GanttUser::getId).toList(),
                         task.getStartDate(),
@@ -158,7 +156,6 @@ public class GanttChartService {
                 newTask.setPriority(taskDto.getPriority());
                 newTask.setDuration(taskDto.getDuration());
                 newTask.setResources(taskDto.getResources());
-                newTask.setExtendable(taskDto.getExtendable());
                 newTask.setStartDate(taskDto.getStartDate());
                 newTask.setEndDate(taskDto.getEndDate());
                 newTask.setPhase(getPhase(phase.getRealId()));

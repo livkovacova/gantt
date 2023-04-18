@@ -1,13 +1,15 @@
 package com.dp.gantt.service;
 
 import com.dp.gantt.exceptions.ProjectNotFoundException;
+import com.dp.gantt.exceptions.TaskNotFoundException;
 import com.dp.gantt.model.PageResponse;
-import com.dp.gantt.persistence.model.GanttUser;
-import com.dp.gantt.persistence.model.Project;
-import com.dp.gantt.persistence.model.RoleType;
+import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.ProjectRequestDto;
 import com.dp.gantt.persistence.model.dto.ProjectResponseDto;
+import com.dp.gantt.persistence.repository.GanttChartRepository;
+import com.dp.gantt.persistence.repository.PhaseRepository;
 import com.dp.gantt.persistence.repository.ProjectRepository;
+import com.dp.gantt.persistence.repository.TaskRepository;
 import com.dp.gantt.service.mapper.ProjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,12 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
 
     private final GanttUserService ganttUserService;
+
+    private final GanttChartRepository ganttChartRepository;
+
+    private final TaskRepository taskRepository;
+
+    private final PhaseRepository phaseRepository;
 
     public List<ProjectResponseDto> getUsersProjects(Long id, RoleType roleType){
         List<Project> result;
@@ -120,11 +128,37 @@ public class ProjectService {
                     log.error("Project with id = {} can not be find", projectId);
                     throw new ProjectNotFoundException(projectId);
                 });
+
+        Long ganttChartId = projectToDelete.getGanttChart().getId();
+        deleteGanttChart(ganttChartId);
+        projectToDelete.setGanttChart(null);
         projectToDelete.setManager(null);
         projectToDelete.setMembers(null);
+
         projectRepository.save(projectToDelete);
         projectRepository.deleteById(projectId);
         return null;
+    }
+
+    public void deleteGanttChart(Long id){
+        List<Phase> phases = phaseRepository.findAllByGanttChart_Id(id);
+        phases.forEach(phase -> {
+            List<Task> tasks = taskRepository.findAllByPhase_IdAndPhase_GanttChart_Id(phase.getId(), id);
+            tasks.forEach(task -> {
+                task.setPredecessors(null);
+                task.setAssignees(null);
+                task.setPhase(null);
+                taskRepository.save(task);
+                taskRepository.deleteById(task.getId());
+            });
+            phase.setGanttChart(null);
+            phaseRepository.save(phase);
+            phaseRepository.deleteById(phase.getId());
+        });
+        GanttChart ganttChart = ganttChartRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+        ganttChart.setProject(null);
+        ganttChartRepository.save(ganttChart);
+        ganttChartRepository.deleteById(id);
     }
 
     public void setDependency(Long projectId){

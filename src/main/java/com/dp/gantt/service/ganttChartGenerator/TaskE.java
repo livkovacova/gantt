@@ -23,8 +23,6 @@ public class TaskE {
 
     private TaskPriority priority;
 
-    private boolean extendable;
-
     private Instant minimalStartDate;
 
     private Integer addedGapDays = 0;
@@ -39,14 +37,13 @@ public class TaskE {
         this.predecessors = predecessors;
     }
 
-    public TaskE(Long id, int duration, String name, List<Predecessor> predecessors, List<Long> assignees, TaskPriority priority, boolean extendable, Long phaseId, String phaseName, Integer resources) {
+    public TaskE(Long id, int duration, String name, List<Predecessor> predecessors, List<Long> assignees, TaskPriority priority, Long phaseId, String phaseName, Integer resources) {
         this.id = id;
         this.duration = duration;
         this.name = name;
         this.predecessors = predecessors;
         this.assignees = assignees;
         this.priority = priority;
-        this.extendable = extendable;
         this.phaseInfo = new PhaseInfo(phaseId,phaseName);
         this.resources = resources;
     }

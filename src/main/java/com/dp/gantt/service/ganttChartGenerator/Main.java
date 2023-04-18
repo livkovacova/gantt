@@ -32,11 +32,11 @@ public class Main {
 //        TaskE task5 = new TaskE(5, 3, list5, List.of(21,22,23), Priority.LOW, true);
 //        TaskE task6 = new TaskE(6, 3, list6, List.of(21,22,23), Priority.HIGH, false);
 
-        TaskE analysis = new TaskE(1L, 5, "A", new ArrayList<>(), List.of(1L, 2L, 3L), TaskPriority.MEDIUM, false, 1L, "phase", 3);
-        TaskE analysis2 = new TaskE(2L, 4, "B", new ArrayList<>(), List.of(1L, 2L), TaskPriority.MEDIUM, false, 1L, "phase", 3);
-        TaskE data = new TaskE(3L, 5,  "C", datalist, List.of(3L, 4L), TaskPriority.HIGH, false, 1L, "phase", 3);
-        TaskE doku1 = new TaskE(4L, 3,  "D", dokulist1, List.of(1L, 2L), TaskPriority.HIGH, false, 1L, "phase", 3);
-        TaskE doku2 = new TaskE(5L, 5, "E", dokulist2,  List.of(1L, 3L), TaskPriority.HIGH, false, 1L, "phase", 3);
+        TaskE analysis = new TaskE(1L, 5, "A", new ArrayList<>(), List.of(1L, 2L, 3L), TaskPriority.MEDIUM, 1L, "phase", 3);
+        TaskE analysis2 = new TaskE(2L, 4, "B", new ArrayList<>(), List.of(1L, 2L), TaskPriority.MEDIUM, 1L, "phase", 3);
+        TaskE data = new TaskE(3L, 5,  "C", datalist, List.of(3L, 4L), TaskPriority.HIGH, 1L, "phase", 3);
+        TaskE doku1 = new TaskE(4L, 3,  "D", dokulist1, List.of(1L, 2L), TaskPriority.HIGH, 1L, "phase", 3);
+        TaskE doku2 = new TaskE(5L, 5, "E", dokulist2,  List.of(1L, 3L), TaskPriority.HIGH, 1L, "phase", 3);
 
         ganttChart.addTask(analysis);
         ganttChart.addTask(analysis2);

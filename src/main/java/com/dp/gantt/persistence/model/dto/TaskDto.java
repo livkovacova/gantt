@@ -19,7 +19,6 @@ public class TaskDto {
     private TaskPriority priority;
     private Integer duration;
     private Integer resources;
-    private Boolean extendable;
     private List<Long> predecessors;
     private List<Long> assignees;
     private Instant startDate;
@@ -27,13 +26,12 @@ public class TaskDto {
     private Optional<Long> realId;
 
 
-    public TaskDto(Long workId, String name, TaskPriority priority, Integer duration, Integer resources, Boolean extendable, List<Long> predecessors, List<Long> assignees, Instant startDate, Instant endDate) {
+    public TaskDto(Long workId, String name, TaskPriority priority, Integer duration, Integer resources, List<Long> predecessors, List<Long> assignees, Instant startDate, Instant endDate) {
         this.workId = workId;
         this.name = name;
         this.priority = priority;
         this.duration = duration;
         this.resources = resources;
-        this.extendable = extendable;
         this.predecessors = predecessors;
         this.assignees = assignees;
         this.startDate = startDate;
