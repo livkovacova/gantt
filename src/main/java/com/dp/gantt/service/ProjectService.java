@@ -58,6 +58,7 @@ public class ProjectService {
     public Project saveProject(ProjectRequestDto projectRequestDto){
         Project project = projectMapper.projectRequestDtoToProject(projectRequestDto);
         updateDependenciesInProject(projectRequestDto, project);
+        project.setDependencyCreated(false);
         return projectRepository.save(project);
     }
 
@@ -105,9 +106,7 @@ public class ProjectService {
                     throw new ProjectNotFoundException(projectId);
                 });
         ProjectResponseDto projectResponseDto = projectMapper.projectToProjectDto(project);
-        if(project.getTreeCreated() != null && project.getTreeCreated()){
-            projectResponseDto.setTreeCreated(true);
-        }
+        projectResponseDto.setTreeCreated(project.getDependencyCreated());
         if(project.getGanttChart() != null){
             projectResponseDto.setGanttCreated(true);
         }
@@ -126,5 +125,15 @@ public class ProjectService {
         projectRepository.save(projectToDelete);
         projectRepository.deleteById(projectId);
         return null;
+    }
+
+    public void setDependency(Long projectId){
+        Project projectToChange = projectRepository.findById(projectId)
+                .orElseThrow(() -> {
+                    log.error("Project with id = {} can not be find", projectId);
+                    throw new ProjectNotFoundException(projectId);
+                });
+        projectToChange.setDependencyCreated(true);
+        projectRepository.save(projectToChange);
     }
 }

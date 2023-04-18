@@ -52,4 +52,9 @@ public class ProjectController {
     public Project deleteProject(@RequestParam Long id) {
         return projectService.deleteProject(id);
     }
+
+    @GetMapping("/dependency")
+    public void setDependency(@RequestParam Long id) {
+        projectService.setDependency(id);
+    }
 }

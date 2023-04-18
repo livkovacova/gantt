@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -20,10 +21,12 @@ import java.util.Set;
 })
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // important
 public class GanttUser {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @EqualsAndHashCode.Include
         private Long id;
 
         @NotBlank

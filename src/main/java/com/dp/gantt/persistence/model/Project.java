@@ -1,26 +1,26 @@
 package com.dp.gantt.persistence.model;
 
-import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "project")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // important
 public class Project {
 
     @Id
     @GeneratedValue
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Size(max = 30, min = 3)
@@ -51,10 +51,6 @@ public class Project {
     @JoinColumn(name = "gantt_chart_id")
     private GanttChart ganttChart;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dependency_tree_id")
-    private DependencyTree dependencyTree;
-
-    private Boolean treeCreated;
+    private Boolean dependencyCreated;
 
 }
