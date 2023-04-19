@@ -51,19 +51,14 @@ public class AuthController {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        System.out.println("tu som 54 "+authentication);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("tu som 57");
         String jwt = jwtUtils.generateJwtToken(authentication);
-        System.out.println("tu som 58 jwt mam "+jwt);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println("tu som user details mam "+userDetails);
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        System.out.println("tu som user roles mam "+roles);
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),

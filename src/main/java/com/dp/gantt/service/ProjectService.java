@@ -77,9 +77,15 @@ public class ProjectService {
                     log.error("Project with id = {} can not be find while getting task", updateProjectId);
                     throw new ProjectNotFoundException(updateProjectId);
                 });
+        GanttChart ganttChart = projectToUpdate.getGanttChart();
+        boolean depCreated = projectToUpdate.getDependencyCreated();
         Project updateProject = projectMapper.projectRequestDtoToProject(projectRequestDto);
         projectMapper.update(projectToUpdate, updateProject);
         updateDependenciesInProject(projectRequestDto, projectToUpdate);
+        if(ganttChart != null){
+            projectToUpdate.setGanttChart(ganttChart);
+        }
+        projectToUpdate.setDependencyCreated(depCreated);
         return projectRepository.save(projectToUpdate);
     }
 
@@ -129,9 +135,11 @@ public class ProjectService {
                     throw new ProjectNotFoundException(projectId);
                 });
 
-        Long ganttChartId = projectToDelete.getGanttChart().getId();
-        deleteGanttChart(ganttChartId);
-        projectToDelete.setGanttChart(null);
+        if(projectToDelete.getGanttChart() != null){
+            Long ganttChartId = projectToDelete.getGanttChart().getId();
+            deleteGanttChart(ganttChartId);
+            projectToDelete.setGanttChart(null);
+        }
         projectToDelete.setManager(null);
         projectToDelete.setMembers(null);
 
@@ -145,8 +153,6 @@ public class ProjectService {
         phases.forEach(phase -> {
             List<Task> tasks = taskRepository.findAllByPhase_IdAndPhase_GanttChart_Id(phase.getId(), id);
             tasks.forEach(task -> {
-                task.setPredecessors(null);
-                task.setAssignees(null);
                 task.setPhase(null);
                 taskRepository.save(task);
                 taskRepository.deleteById(task.getId());

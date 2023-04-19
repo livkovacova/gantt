@@ -45,6 +45,7 @@ public class GanttChartService {
     private ProjectRepository projectRepository;
 
     public GanttChartDto generateGanttChart(List<PhaseDto> phases, Long projectId){
+        long start1 = System.nanoTime();
         Instant projectStartDate = projectService.findProject(projectId).getStartDate();
         GanttChartGenerator ganttChartGenerator = new GanttChartGenerator(projectStartDate, projectId);
 
@@ -82,7 +83,10 @@ public class GanttChartService {
         ganttChartGenerator.sortNonExtendableParallelTasks();
         ganttChartGenerator.calculateDates();
 
-        return ganttChartGenerator.generateGanttChartResult();
+        GanttChartDto result = ganttChartGenerator.generateGanttChartResult();
+        long end1 = System.nanoTime();
+        System.out.println("Elapsed Time in nano seconds: "+ (end1-start1));
+        return result;
     }
 
     public GanttChartDto getGanttChartByProjectId(Long id){

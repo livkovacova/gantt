@@ -58,10 +58,9 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests().requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/test/all").permitAll()
-                .requestMatchers("/api/projects/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
-                .requestMatchers("/api/ganttChart/**").permitAll()
+                .requestMatchers("/api/projects/**").authenticated()
+                .requestMatchers("/api/users/**").authenticated()
+                .requestMatchers("/api/ganttChart/**").authenticated()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
