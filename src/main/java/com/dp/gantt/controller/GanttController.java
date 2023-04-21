@@ -1,5 +1,6 @@
 package com.dp.gantt.controller;
 
+import com.dp.gantt.model.GanttChartInfo;
 import com.dp.gantt.persistence.model.dto.GanttChartDto;
 import com.dp.gantt.persistence.model.dto.GanttRequestDto;
 import com.dp.gantt.service.GanttChartService;

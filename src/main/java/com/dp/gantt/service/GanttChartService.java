@@ -2,7 +2,7 @@ package com.dp.gantt.service;
 
 import com.dp.gantt.exceptions.GanttChartIsCyclicException;
 import com.dp.gantt.exceptions.PhaseNotFoundException;
-import com.dp.gantt.exceptions.TaskNotFoundException;
+import com.dp.gantt.model.GanttChartInfo;
 import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.GanttChartDto;
 import com.dp.gantt.persistence.model.dto.PhaseDto;
@@ -178,4 +178,5 @@ public class GanttChartService {
             }
         }
     }
+
 }

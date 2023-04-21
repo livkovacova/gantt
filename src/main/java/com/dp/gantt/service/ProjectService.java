@@ -2,6 +2,7 @@ package com.dp.gantt.service;
 
 import com.dp.gantt.exceptions.ProjectNotFoundException;
 import com.dp.gantt.exceptions.TaskNotFoundException;
+import com.dp.gantt.model.GanttChartInfo;
 import com.dp.gantt.model.PageResponse;
 import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.ProjectRequestDto;
@@ -38,6 +39,7 @@ public class ProjectService {
 
     private final PhaseRepository phaseRepository;
 
+
     public List<ProjectResponseDto> getUsersProjects(Long id, RoleType roleType){
         List<Project> result;
         if(roleType == RoleType.TEAM_MEMBER){
@@ -60,6 +62,10 @@ public class ProjectService {
             projectPage = projectRepository.findAllByManager_id(id, paging);
         }
         List<ProjectResponseDto> projectResponseDtoList = projectMapper.projectListToProjectDtoList(projectPage.getContent());
+        projectResponseDtoList.forEach(project -> {
+            GanttChartInfo ganttChartInfo = getGanttInfoForProject(project.getId());
+            project.setGanttChartInfo(ganttChartInfo);
+        });
         return new PageResponse<>(projectPage.getTotalElements(), projectPage.getTotalPages(), projectResponseDtoList);
     }
 
@@ -175,5 +181,19 @@ public class ProjectService {
                 });
         projectToChange.setDependencyCreated(true);
         projectRepository.save(projectToChange);
+    }
+
+    private GanttChartInfo getGanttInfoForProject(Long id){
+        GanttChart ganttChart = findProject(id).getGanttChart();
+        int numberOfPhases = 0;
+        int numberOfTasks = 0;
+        if(ganttChart != null) {
+            List<Phase> phases = phaseRepository.findAllByGanttChart_Id(ganttChart.getId());
+            for (Phase phase : phases) {
+                numberOfTasks += taskRepository.getSumByPhaseId(phase.getId());
+                numberOfPhases++;
+            }
+        }
+        return new GanttChartInfo(numberOfPhases, numberOfTasks);
     }
 }

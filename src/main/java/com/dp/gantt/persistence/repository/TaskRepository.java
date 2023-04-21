@@ -27,4 +27,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(value = "DELETE FROM task_predecessors WHERE task_id = :taskId", nativeQuery = true)
     void deletePredecessorsForTask(@Param("taskId") Long taskId);
 
+    @Query(value = "SELECT COUNT(id) FROM task WHERE phase_id = :phaseId", nativeQuery = true)
+    Integer getSumByPhaseId(@Param("phaseId")Long phaseId);
+
 }

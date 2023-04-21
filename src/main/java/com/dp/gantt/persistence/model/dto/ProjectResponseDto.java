@@ -1,5 +1,6 @@
 package com.dp.gantt.persistence.model.dto;
 
+import com.dp.gantt.model.GanttChartInfo;
 import com.dp.gantt.persistence.model.GanttUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +26,6 @@ public class ProjectResponseDto {
     private boolean ganttCreated;
 
     private boolean treeCreated;
+
+    private GanttChartInfo ganttChartInfo;
 }
