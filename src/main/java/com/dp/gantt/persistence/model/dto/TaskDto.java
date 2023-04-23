@@ -23,10 +23,12 @@ public class TaskDto {
     private List<Long> assignees;
     private Instant startDate;
     private Instant endDate;
+
+    private Integer state;
     private Optional<Long> realId;
 
 
-    public TaskDto(Long workId, String name, TaskPriority priority, Integer duration, Integer resources, List<Long> predecessors, List<Long> assignees, Instant startDate, Instant endDate) {
+    public TaskDto(Long workId, String name, TaskPriority priority, Integer duration, Integer resources, List<Long> predecessors, List<Long> assignees, Instant startDate, Instant endDate, Integer state) {
         this.workId = workId;
         this.name = name;
         this.priority = priority;
@@ -36,5 +38,6 @@ public class TaskDto {
         this.assignees = assignees;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.state = state;
     }
 }

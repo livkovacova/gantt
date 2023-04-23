@@ -402,8 +402,10 @@ public class GanttChartGenerator {
                     predecessors,
                     taskE.getAssignees(),
                     taskE.getStartDate(),
-                    taskE.getEndDate()
+                    taskE.getEndDate(),
+                    taskE.getState()
             );
+            System.out.println("state in result is: "+taskE.getState());
             PhaseDto phase = findPhaseById(taskE.getPhaseInfo().getId(), phases);
             phase.addTask(taskDto);
         }

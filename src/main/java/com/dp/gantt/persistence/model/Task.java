@@ -49,4 +49,6 @@ public class Task {
 
     private Instant endDate;
 
+    private Integer state;
+
 }

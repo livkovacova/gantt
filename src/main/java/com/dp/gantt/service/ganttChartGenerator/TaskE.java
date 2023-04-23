@@ -19,6 +19,8 @@ public class TaskE {
     private Instant startDate;
     private Instant endDate;
 
+    private Integer state;
+
     private List<Long> assignees;
 
     private TaskPriority priority;
@@ -37,7 +39,7 @@ public class TaskE {
         this.predecessors = predecessors;
     }
 
-    public TaskE(Long id, int duration, String name, List<Predecessor> predecessors, List<Long> assignees, TaskPriority priority, Long phaseId, String phaseName, Integer resources) {
+    public TaskE(Long id, int duration, String name, List<Predecessor> predecessors, List<Long> assignees, TaskPriority priority, Long phaseId, String phaseName, Integer resources, Integer state) {
         this.id = id;
         this.duration = duration;
         this.name = name;
@@ -46,6 +48,7 @@ public class TaskE {
         this.priority = priority;
         this.phaseInfo = new PhaseInfo(phaseId,phaseName);
         this.resources = resources;
+        this.state = state;
     }
 
     public void addPredecessor(Predecessor predecessor){

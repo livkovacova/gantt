@@ -65,7 +65,8 @@ public class GanttChartService {
                         taskDto.getPriority(),
                         phase.getWorkId(),
                         phase.getName(),
-                        taskDto.getResources()
+                        taskDto.getResources(),
+                        taskDto.getState()
                 );
 
                 ganttChartGenerator.addTask(taskE);
@@ -107,7 +108,8 @@ public class GanttChartService {
                         task.getPredecessors().stream().map(Task::getWorkId).toList(),
                         task.getAssignees().stream().map(GanttUser::getId).toList(),
                         task.getStartDate(),
-                        task.getEndDate()
+                        task.getEndDate(),
+                        task.getState()
                 );
                 newPhase.addTask(taskDto);
             });
@@ -163,6 +165,7 @@ public class GanttChartService {
                 newTask.setStartDate(taskDto.getStartDate());
                 newTask.setEndDate(taskDto.getEndDate());
                 newTask.setPhase(getPhase(phase.getRealId()));
+                newTask.setState(taskDto.getState());
                 Task savedTask = taskRepository.save(newTask);
                 taskDto.setRealId(Optional.of(savedTask.getId()));
             }
