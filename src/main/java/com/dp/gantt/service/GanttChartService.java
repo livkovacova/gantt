@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -49,12 +46,46 @@ public class GanttChartService {
         Instant projectStartDate = projectService.findProject(projectId).getStartDate();
         GanttChartGenerator ganttChartGenerator = new GanttChartGenerator(projectStartDate, projectId);
 
+        Long helpId = 1000L;
+        List<TaskE> helpTasks = new ArrayList<>();
         for(PhaseDto phase: phases){
+            List<Predecessor> predecessors= new ArrayList<>();
             phase.getTasks().forEach(taskDto -> {
+                Predecessor newPred = new Predecessor(taskDto.getWorkId(), true);
+                predecessors.add(newPred);
+            });
+            TaskE helpTask = new TaskE(
+                    helpId,
+                    0,
+                    "help task",
+                    predecessors,
+                    List.of(),
+                    TaskPriority.LOW,
+                    phase.getWorkId(),
+                    phase.getName(),
+                    0,
+                    0,
+                    true);
+            helpTasks.add(helpTask);
+            helpId++;
+        }
+
+        PhaseDto lastPhase = null;
+        for(PhaseDto phase: phases){
+            for(TaskDto taskDto: phase.getTasks()) {
                 List<Predecessor> predecessors = new ArrayList<>();
                 taskDto.getPredecessors().forEach(predecessor -> {
                     predecessors.add(new Predecessor(predecessor, false));
                 });
+                if(lastPhase != null) {
+                    PhaseDto finalLastPhase = lastPhase;
+                    TaskE helpTask = helpTasks.stream()
+                            .filter(taskE -> taskE.getPhaseInfo().getId() == finalLastPhase.getWorkId())
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Help task not found"));
+                    Predecessor helpPred = new Predecessor(helpTask.getId(), true);
+                    predecessors.add(helpPred);
+                }
 
                 TaskE taskE = new TaskE(
                         taskDto.getWorkId(),
@@ -66,11 +97,18 @@ public class GanttChartService {
                         phase.getWorkId(),
                         phase.getName(),
                         taskDto.getResources(),
-                        taskDto.getState()
+                        taskDto.getState(),
+                        false
                 );
-
                 ganttChartGenerator.addTask(taskE);
-            });
+            }
+            ganttChartGenerator.addTask(helpTasks
+                    .stream()
+                    .filter(taskE -> taskE.getPhaseInfo().getId() == phase.getWorkId())
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Help task not found"))
+            );
+            lastPhase = phase;
         }
 
         if(ganttChartGenerator.isGraphCyclic()){

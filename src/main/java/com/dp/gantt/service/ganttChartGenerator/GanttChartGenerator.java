@@ -388,26 +388,32 @@ public class GanttChartGenerator {
         Long currentPhase = -1L;
 
         for (TaskE taskE : tasks) {
-            if (currentPhase != taskE.getPhaseInfo().getId()) {
-                phases.add(new PhaseDto(taskE.getPhaseInfo().getId(), taskE.getPhaseInfo().getName(), projectId));
-                currentPhase = taskE.getPhaseInfo().getId();
+            if(!taskE.isHelpTask()) {
+                if (currentPhase != taskE.getPhaseInfo().getId()) {
+                    phases.add(new PhaseDto(taskE.getPhaseInfo().getId(), taskE.getPhaseInfo().getName(), projectId));
+                    currentPhase = taskE.getPhaseInfo().getId();
+                }
+                List<Long> predecessors = taskE.getPredecessors().stream()
+                        .filter(predecessor -> !predecessor.isHidden())
+                        .map(Predecessor::getId)
+                        .toList();
+
+                TaskDto taskDto = new TaskDto(
+                        taskE.getId(),
+                        taskE.getName(),
+                        taskE.getPriority(),
+                        taskE.getDuration(),
+                        taskE.getResources(),
+                        predecessors,
+                        taskE.getAssignees(),
+                        taskE.getStartDate(),
+                        taskE.getEndDate(),
+                        taskE.getState()
+                );
+                System.out.println("state in result is: " + taskE.getState());
+                PhaseDto phase = findPhaseById(taskE.getPhaseInfo().getId(), phases);
+                phase.addTask(taskDto);
             }
-            List<Long> predecessors = taskE.getPredecessors().stream().map(Predecessor::getId).toList();
-            TaskDto taskDto = new TaskDto(
-                    taskE.getId(),
-                    taskE.getName(),
-                    taskE.getPriority(),
-                    taskE.getDuration(),
-                    taskE.getResources(),
-                    predecessors,
-                    taskE.getAssignees(),
-                    taskE.getStartDate(),
-                    taskE.getEndDate(),
-                    taskE.getState()
-            );
-            System.out.println("state in result is: "+taskE.getState());
-            PhaseDto phase = findPhaseById(taskE.getPhaseInfo().getId(), phases);
-            phase.addTask(taskDto);
         }
 
         return new GanttChartDto(null, phases, projectId);
