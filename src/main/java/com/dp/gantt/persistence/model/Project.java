@@ -37,7 +37,7 @@ public class Project {
 
     private String currency;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinTable(
             name = "project_member",
             joinColumns = {@JoinColumn(name = "project_id")},
@@ -47,10 +47,12 @@ public class Project {
 
     private Instant startDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "gantt_chart_id")
     private GanttChart ganttChart;
 
     private Boolean dependencyCreated;
+
+    private Boolean active;
 
 }

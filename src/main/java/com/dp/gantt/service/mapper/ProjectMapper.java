@@ -19,6 +19,7 @@ public interface ProjectMapper {
     @Mapping(target = "members", ignore = true)
     @Mapping(target = "ganttChart", ignore = true)
     @Mapping(target = "dependencyCreated", ignore = true)
+    @Mapping(target = "active", ignore = true)
     Project projectRequestDtoToProject(ProjectRequestDto projectRequestDto);
 
     @Mapping(target = "members", ignore = true)

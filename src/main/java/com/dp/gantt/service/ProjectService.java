@@ -1,5 +1,6 @@
 package com.dp.gantt.service;
 
+import com.dp.gantt.exceptions.GanttChartNotFoundException;
 import com.dp.gantt.exceptions.ProjectNotFoundException;
 import com.dp.gantt.exceptions.TaskNotFoundException;
 import com.dp.gantt.model.GanttChartInfo;
@@ -56,10 +57,10 @@ public class ProjectService {
         Pageable paging = PageRequest.of(page, size, sorting);
         Page<Project> projectPage;
         if(roleType == RoleType.TEAM_MEMBER){
-            projectPage = projectRepository.findAllByMembers_id(id, paging);
+            projectPage = projectRepository.findAllByMembers_idAndActiveIsTrue(id, paging);
         }
         else{
-            projectPage = projectRepository.findAllByManager_id(id, paging);
+            projectPage = projectRepository.findAllByManager_idAndActiveIsTrue(id, paging);
         }
         List<ProjectResponseDto> projectResponseDtoList = projectMapper.projectListToProjectDtoList(projectPage.getContent());
         projectResponseDtoList.forEach(project -> {
@@ -72,6 +73,7 @@ public class ProjectService {
     public Project saveProject(ProjectRequestDto projectRequestDto){
         Project project = projectMapper.projectRequestDtoToProject(projectRequestDto);
         updateDependenciesInProject(projectRequestDto, project);
+        project.setActive(true);
         project.setDependencyCreated(false);
         return projectRepository.save(project);
     }
@@ -86,6 +88,7 @@ public class ProjectService {
         GanttChart ganttChart = projectToUpdate.getGanttChart();
         boolean depCreated = projectToUpdate.getDependencyCreated();
         Project updateProject = projectMapper.projectRequestDtoToProject(projectRequestDto);
+        updateProject.setActive(true);
         projectMapper.update(projectToUpdate, updateProject);
         updateDependenciesInProject(projectRequestDto, projectToUpdate);
         if(ganttChart != null){
@@ -146,11 +149,34 @@ public class ProjectService {
             deleteGanttChart(ganttChartId);
             projectToDelete.setGanttChart(null);
         }
+        System.out.println(projectId);
+        //projectRepository.deleteMembersFromProject(projectId);
+        if(projectToDelete.getGanttChart() != null){
+            GanttChart projectGanttChart = ganttChartRepository
+                    .findById(projectToDelete.getGanttChart().getId())
+                    .orElseThrow(() -> new GanttChartNotFoundException(projectToDelete.getGanttChart().getId())
+            );
+            projectGanttChart.setProject(null);
+            ganttChartRepository.save(projectGanttChart);
+        }
+        projectToDelete.setGanttChart(null);
         projectToDelete.setManager(null);
         projectToDelete.setMembers(null);
 
         projectRepository.save(projectToDelete);
         projectRepository.deleteById(projectId);
+        return null;
+    }
+
+    public Project saveDeleteProject(Long projectId){
+        Project projectToDelete = projectRepository.findById(projectId)
+                .orElseThrow(() -> {
+                    log.error("Project with id = {} can not be find", projectId);
+                    throw new ProjectNotFoundException(projectId);
+                });
+        projectToDelete.setActive(false);
+        projectRepository.save(projectToDelete);
+        //projectRepository.deleteById(projectId);
         return null;
     }
 

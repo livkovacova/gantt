@@ -50,7 +50,7 @@ public class ProjectController {
 
     @DeleteMapping("/delete")
     public Project deleteProject(@RequestParam Long id) {
-        return projectService.deleteProject(id);
+        return projectService.saveDeleteProject(id);
     }
 
     @GetMapping("/dependency")
