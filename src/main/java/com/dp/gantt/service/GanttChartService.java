@@ -160,7 +160,7 @@ public class GanttChartService {
         return new GanttChartDto(ganttChart.getId(), phases, id);
     }
 
-    public void addGanttChartToProject(GanttChartDto ganttChartDto){
+    public GanttChartDto addGanttChartToProject(GanttChartDto ganttChartDto){
         System.out.println(ganttChartDto);
         long projectId = ganttChartDto.getProject();
         Project project = projectService.findProject(projectId);
@@ -173,6 +173,7 @@ public class GanttChartService {
         savePhases(projectPhases, savedGantt);
         saveProjectTasks(projectPhases);
         addDependenciesToTasks(projectPhases, savedGantt.getId());
+        return getGanttChartByProjectId(projectId);
     }
 
     public void updateGanttChart(GanttChartDto ganttChartDto){

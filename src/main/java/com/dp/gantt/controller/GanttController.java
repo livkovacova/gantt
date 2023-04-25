@@ -22,8 +22,8 @@ public class GanttController {
     }
 
     @PostMapping("/save")
-    public void saveGanttChart(@Valid @RequestBody GanttChartDto ganttChart){
-        ganttChartService.addGanttChartToProject(ganttChart);
+    public GanttChartDto saveGanttChart(@Valid @RequestBody GanttChartDto ganttChart){
+        return ganttChartService.addGanttChartToProject(ganttChart);
     }
 
     @PostMapping("/edit")
