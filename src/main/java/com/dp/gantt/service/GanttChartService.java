@@ -1,16 +1,15 @@
 package com.dp.gantt.service;
 
 import com.dp.gantt.exceptions.GanttChartIsCyclicException;
+import com.dp.gantt.exceptions.GanttUserNotFoundException;
 import com.dp.gantt.exceptions.PhaseNotFoundException;
+import com.dp.gantt.exceptions.TaskNotFoundException;
 import com.dp.gantt.model.GanttChartInfo;
 import com.dp.gantt.persistence.model.*;
 import com.dp.gantt.persistence.model.dto.GanttChartDto;
 import com.dp.gantt.persistence.model.dto.PhaseDto;
 import com.dp.gantt.persistence.model.dto.TaskDto;
-import com.dp.gantt.persistence.repository.GanttChartRepository;
-import com.dp.gantt.persistence.repository.PhaseRepository;
-import com.dp.gantt.persistence.repository.ProjectRepository;
-import com.dp.gantt.persistence.repository.TaskRepository;
+import com.dp.gantt.persistence.repository.*;
 import com.dp.gantt.service.ganttChartGenerator.GanttChartGenerator;
 import com.dp.gantt.service.ganttChartGenerator.Predecessor;
 import com.dp.gantt.service.ganttChartGenerator.TaskE;
@@ -40,6 +39,8 @@ public class GanttChartService {
     private PhaseRepository phaseRepository;
 
     private ProjectRepository projectRepository;
+
+    private GanttUserRepository ganttUserRepository;
 
     public GanttChartDto generateGanttChart(List<PhaseDto> phases, Long projectId){
         long start1 = System.nanoTime();
@@ -135,6 +136,7 @@ public class GanttChartService {
         List<Phase> ganttPhases = phaseRepository.findAllByGanttChart_Id(ganttChart.getId());
         ganttPhases.forEach(phase -> {
             PhaseDto newPhase = new PhaseDto(phase.getId(), phase.getName(), id);
+            newPhase.setRealId(Optional.of(phase.getId()));
             List<Task> tasks = taskRepository.findAllByPhase_IdAndPhase_GanttChart_Id(phase.getId(), ganttChart.getId());
             tasks.forEach(task -> {
                 TaskDto taskDto = new TaskDto(
@@ -149,6 +151,7 @@ public class GanttChartService {
                         task.getEndDate(),
                         task.getState()
                 );
+                taskDto.setRealId(Optional.of(task.getId()));
                 newPhase.addTask(taskDto);
             });
             phases.add(newPhase);
@@ -170,6 +173,45 @@ public class GanttChartService {
         savePhases(projectPhases, savedGantt);
         saveProjectTasks(projectPhases);
         addDependenciesToTasks(projectPhases, savedGantt.getId());
+    }
+
+    public void updateGanttChart(GanttChartDto ganttChartDto){
+        long projectId = ganttChartDto.getProject();
+        GanttChart ganttChart = projectService.findProject(projectId).getGanttChart();
+        List<Phase> ganttPhases = phaseRepository.findAllByGanttChart_Id(ganttChart.getId());
+
+        for(Phase phase: ganttPhases){
+            List<Task> phaseTasks = taskRepository.findAllByPhase_IdAndPhase_GanttChart_Id(phase.getId(), ganttChart.getId());
+            PhaseDto updatedPhase = null;
+            for(PhaseDto phaseDto: ganttChartDto.getPhases()) {
+                Long phaseDtoId = phaseDto.getRealId().orElseThrow(() -> new PhaseNotFoundException(phase.getId()));
+                if (Objects.equals(phaseDtoId, phase.getId())) {
+                    updatedPhase = phaseDto;
+                }
+            }
+            if(updatedPhase != null){
+                for(Task task: phaseTasks){
+                    TaskDto updatedPhaseTask = updatedPhase.getTasks().stream().filter((taskDto -> {
+                        Long taskDtoId = taskDto.getRealId().orElseThrow(() -> new TaskNotFoundException(task.getId()));
+                        return Objects.equals(taskDtoId, task.getId());
+                    })).toList().get(0);
+                    task.setDuration(updatedPhaseTask.getDuration());
+                    task.setState(updatedPhaseTask.getState());
+                    task.setResources(updatedPhaseTask.getResources());
+                    task.setPriority(updatedPhaseTask.getPriority());
+                    task.setStartDate(updatedPhaseTask.getStartDate());
+                    task.setEndDate(updatedPhaseTask.getEndDate());
+                    List<GanttUser> assignees = new ArrayList<>();
+                    for(Long assigneeId: updatedPhaseTask.getAssignees()){
+                        GanttUser newAssignee = ganttUserRepository.findById(assigneeId).orElseThrow(() -> new GanttUserNotFoundException(assigneeId));
+                        assignees.add(newAssignee);
+                    }
+                    task.setAssignees(assignees);
+                    taskRepository.save(task);
+                }
+            }
+        }
+
     }
 
     public Phase getPhase(Optional<Long> id){

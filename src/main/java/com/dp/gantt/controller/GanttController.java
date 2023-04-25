@@ -26,6 +26,11 @@ public class GanttController {
         ganttChartService.addGanttChartToProject(ganttChart);
     }
 
+    @PostMapping("/edit")
+    public void editGanttChart(@Valid @RequestBody GanttChartDto ganttChart){
+        ganttChartService.updateGanttChart(ganttChart);
+    }
+
     @GetMapping
     public GanttChartDto getProjectGanttChart(@RequestParam Long id){
         return ganttChartService.getGanttChartByProjectId(id);
