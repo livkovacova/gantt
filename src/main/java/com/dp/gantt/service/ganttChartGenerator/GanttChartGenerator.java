@@ -134,13 +134,6 @@ public class GanttChartGenerator {
         System.out.println(minimalDurations);
         for (TaskE task : tasks) {
             int maxDuration = minimalDurations.get(task.getId()) - task.getDuration();
-//            for (Predecessor pred : task.getPredecessors()) {
-//                int predFinish = earliestStart.get(pred.getId()) + findById(pred.getId()).getDuration();
-//                predFinish += findById(pred.getId()).getAddedGapDays();
-//                if (predFinish > maxDuration) {
-//                    maxDuration = predFinish;
-//                }
-//            }
             earliestStart.put(task.getId(), maxDuration);
             Instant newStartDate = startDate.plus(maxDuration, ChronoUnit.DAYS);
             Instant minStartDate = task.getMinimalStartDate();
@@ -224,90 +217,6 @@ public class GanttChartGenerator {
 
     }
 
-    public void extendTasksDuration() {
-        boolean change = false;
-        for (TaskE task : tasks) {
-            // Check if task is extendable
-            //if (task.isExtendable()) {
-
-            // Calculate additional days
-//            double additionalDays = 0.0;
-//            Map<Integer, Double> assigneesWeights = new HashMap<>();
-//            task.getAssignees().forEach(assignee -> assigneesWeights.put(assignee, 1.0));
-            for (TaskE t : tasks) {
-                // Check if task t is parallel and has shared employees
-                if (t.getId() != task.getId() && !(t.getStartDate().isAfter(task.getEndDate()) || t.getEndDate().isBefore(task.getStartDate()))) {
-                    List<Long> sharedEmployees = getSharedEmployees(t, task);
-                    if (!sharedEmployees.isEmpty()) {
-                        if (listEqualsIgnoreOrder(task.getAssignees(), t.getAssignees())) {
-                            if (t.getPriority().ordinal() >= task.getPriority().ordinal()) {
-                                if (!getPredById(task.getPredecessors(), t.getId())) {
-                                    Predecessor newPred = new Predecessor(t.getId(), true);
-                                    task.addPredecessor(newPred);
-                                    change = true;
-                                }
-                            }
-//                                else {
-//                                    if (!getPredById(t.getPredecessors(), task.getId())) {
-//                                        Predecessor newPred = new Predecessor(task.getId(), true);
-//                                        t.addPredecessor(newPred);
-//                                        change = true;
-//                                        System.out.println("Druha vetva Added pred like this "+t.getId()+" "+task.getId());
-//                                    }
-//                                }
-                        } else {
-                            Instant intersectionStart = task.getStartDate().isBefore(t.getStartDate()) ? t.getStartDate() : task.getStartDate();
-                            Instant intersectionEnd = task.getEndDate().isBefore(t.getEndDate()) ? task.getEndDate() : t.getEndDate();
-                            int intersectionDuration = (int) Duration.between(intersectionStart, intersectionEnd).toDays() + 1;
-
-                            double sharedEmployeesWorkOnOtherTask = getSharedEmployeesDuration(t, sharedEmployees);
-                            double nonSharedEmployeesWorkOnOtherTask = t.getDuration() - sharedEmployeesWorkOnOtherTask;
-
-                            double sharedEmployeesWorkOnThisTask = getSharedEmployeesDuration(task, sharedEmployees);
-                            double nonSharedEmployeesWorkOnThisTask = task.getDuration() - sharedEmployeesWorkOnThisTask;
-
-                            if ((intersectionDuration <= nonSharedEmployeesWorkOnOtherTask || intersectionDuration <= nonSharedEmployeesWorkOnThisTask)
-                            ) {
-                                System.out.println("Leave it like this " + task.getId() + " " + t.getId());
-                            } else {
-                                if (intersectionDuration < nonSharedEmployeesWorkOnOtherTask + nonSharedEmployeesWorkOnThisTask ||
-                                        intersectionDuration > sharedEmployeesWorkOnOtherTask / sharedEmployees.size() + sharedEmployeesWorkOnThisTask / sharedEmployees.size()) {
-                                    System.out.println("Leave it like this " + task.getId() + " " + t.getId());
-                                } else {
-                                    if (task.getPriority().ordinal() >= t.getPriority().ordinal()) {
-
-                                        Instant minimalStartDate = task.getEndDate().minus((int) Math.ceil(nonSharedEmployeesWorkOnOtherTask) - 1, ChronoUnit.DAYS);
-                                        Instant oldStartDate = t.getStartDate();
-                                        t.setMinimalStartDate(minimalStartDate);
-                                        t.setStartDate(minimalStartDate);
-                                        t.setEndDate(minimalStartDate.plus(t.getDuration() - 1, ChronoUnit.DAYS));
-                                        int gap = (int) Duration.between(oldStartDate, minimalStartDate).toDays();
-                                        t.setAddedGapDays(gap);
-                                        change = true;
-                                        System.out.println("Task postponed like this " + t.getId() + " " + t.getStartDate());
-                                    }
-                                }
-                            }
-                            //additionalDays += getSharedEmployeesDuration(t, sharedEmployees);
-                        }
-                        if (change) {
-                            calculateDates();
-                            extendTasksDuration();
-                        }
-                    }
-                }
-
-                // }
-//            double newDuration = (task.getDuration() * task.getAssignees().size()) / getSumOfWeights(assigneesWeights, task.getAssignees());
-//            double additionalTimeFromEPT = newDuration - task.getDuration();
-//            additionalDays += additionalTimeFromEPT;
-//            // Extend task duration
-//            task.setDuration(task.getDuration() + (int) Math.ceil(additionalDays));
-                //task.setEndDate(task.getEndDate().plus((int) Math.ceil(additionalDays), ChronoUnit.DAYS));
-            }
-        }
-    }
-
     private boolean getPredById(List<Predecessor> predecessors, Long id) {
         for (Predecessor predecessor : predecessors) {
             if (predecessor.getId() == id) {
@@ -368,19 +277,6 @@ public class GanttChartGenerator {
 
     public double getSharedEmployeesDuration(TaskE t, List<Long> sharedEmployees) {
         return sharedEmployees.size() * ((double) t.getDuration() / t.getAssignees().size());
-    }
-
-
-    public String generateGanttChart() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("+------------+------------+--------------+\n");
-        sb.append("|    Task    |  Start     |     End      |\n");
-        sb.append("+------------+------------+--------------+\n");
-        for (TaskE task : tasks) {
-            sb.append(String.format("| %10d | %10s | %12s |\n", task.getId(), task.getStartDate(), task.getEndDate()));
-        }
-        sb.append("+------------+------------+--------------+\n");
-        return sb.toString();
     }
 
     public GanttChartDto generateGanttChartResult() {

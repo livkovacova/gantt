@@ -19,8 +19,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findAllByManager_idAndActiveIsTrue(Long manager_id, Pageable pageable);
 
     Page<Project> findAllByMembers_idAndActiveIsTrue(Long members_id, Pageable pageable);
-
-    @Transactional
-    @Query(value = "DELETE FROM project_member WHERE project_id = :projectId", nativeQuery = true)
-    void deleteMembersFromProject(@Param("projectId") Long projectId);
 }

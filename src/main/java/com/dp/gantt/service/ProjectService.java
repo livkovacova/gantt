@@ -168,7 +168,7 @@ public class ProjectService {
         return null;
     }
 
-    public Project saveDeleteProject(Long projectId){
+    public Project safeDeleteProject(Long projectId){
         Project projectToDelete = projectRepository.findById(projectId)
                 .orElseThrow(() -> {
                     log.error("Project with id = {} can not be find", projectId);
